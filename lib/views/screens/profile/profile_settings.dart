@@ -1,0 +1,229 @@
+// ignore_for_file: prefer_const_constructors
+
+import 'package:bounce/bounce.dart';
+import 'package:fire_fighter/constants/app_colors.dart';
+import 'package:fire_fighter/generated/assets.dart';
+import 'package:fire_fighter/views/screens/dialogs/dialogs.dart';
+import 'package:fire_fighter/views/screens/profile/edit_profile.dart';
+import 'package:fire_fighter/views/screens/profile/help_center.dart';
+import 'package:fire_fighter/views/screens/profile/privacy.dart';
+import 'package:fire_fighter/views/widget/common_image_view_widget.dart';
+import 'package:fire_fighter/views/widget/custom_animated_column.dart';
+import 'package:fire_fighter/views/widget/my_text_widget.dart';
+import 'package:flutter/material.dart';
+import 'package:gap/gap.dart';
+import 'package:get/get.dart';
+
+import '../../../controller/profile_controller.dart';
+
+class ProfileSettingsScreen extends StatefulWidget {
+  const ProfileSettingsScreen({super.key});
+
+  @override
+  State<ProfileSettingsScreen> createState() => _ProfileSettingsScreenState();
+}
+
+class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
+  late final ProfileSettingsController c;
+
+  @override
+  void initState() {
+    super.initState();
+
+    /// ✅ Put controller once
+    c = Get.put(ProfileSettingsController());
+
+    /// ✅ Load profile once screen opens
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      c.refreshProfile();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: AnimatedListView(
+        padding: const EdgeInsets.all(24),
+        children: [
+          Gap(50),
+
+          /// ✅ Profile Card (auto updates after edit)
+          Obx(() => Container(
+            padding:
+            const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+            decoration: BoxDecoration(
+              color: kWhite,
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(color: kBorderColor3),
+            ),
+            child: Row(
+              children: [
+                CommonImageView(
+                  imagePath: Assets.imagesProfile,
+                  height: 38,
+                ),
+                Gap(12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      MyText(
+                        text: c.isLoading.value
+                            ? "Loading..."
+                            : (c.fullName.value.isEmpty
+                            ? "User"
+                            : c.fullName.value),
+                        size: 16,
+                        weight: FontWeight.w600,
+                        color: kFontText,
+                      ),
+                      MyText(
+                        text: c.isLoading.value ? "" : c.email.value,
+                        size: 14,
+                        color: kFontText,
+                      ),
+                    ],
+                  ),
+                ),
+                Bounce(
+                  onTap: () async {
+                    final res =
+                    await Get.to(() => const EditProfileScreen());
+                    if (res == true) {
+                      await c.refreshProfile(); // ✅ refresh after update
+                    }
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 6,
+                    ),
+                    decoration: BoxDecoration(
+                      color: kPrimaryColor,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: MyText(
+                      text: "Edit",
+                      size: 12,
+                      color: kWhite,
+                      weight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          )),
+
+          Gap(32),
+
+          MyText(
+            text: "Settings",
+            size: 20,
+            weight: FontWeight.w700,
+            color: kBlack,
+            paddingBottom: 16,
+          ),
+
+          /// ✅ Settings Card
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(vertical: 4),
+            decoration: BoxDecoration(
+              color: kWhite,
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(color: kBorderColor3),
+            ),
+            child: Column(
+              children: [
+                _buildSettingTile(
+                  icon: Assets.imagesPrivacy,
+                  title: "Privacy & Terms",
+                  subtitle: "View our policies and data practices.",
+                  onTap: () => Get.to(() => const PrivacyPolicyScreen()),
+                ),
+                _divider(),
+
+                _buildSettingTile(
+                  icon: Assets.imagesCache,
+                  title: "Cache / Offline Data",
+                  subtitle: "Remove stored searches and free space.",
+                  onTap: () {
+                    DialogHelper.CacheDialog(
+                      context,
+                      onConfirm: () async {
+                        await c.clearCache();
+                      },
+                    );
+                  },
+                ),
+
+                _divider(),
+
+                _buildSettingTile(
+                  icon: Assets.imagesLogout,
+                  title: "Logout",
+                  subtitle: "Sign out of your account.",
+                  onTap: () {
+                    /// ✅ keep your dialog, but call controller logout inside confirm
+                    DialogHelper.LogoutDialog(
+                      context,
+                      onConfirm: () async {
+                        await c.logout();
+                      },
+                    );
+                  },
+                ),
+                _divider(),
+
+                _buildSettingTile(
+                  icon: Assets.imagesSupport,
+                  title: "Support & Info",
+                  subtitle: "Get help or report urgent issues.",
+                  onTap: () => Get.to(() => const HelpCenterScreen()),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSettingTile({
+    required String icon,
+    required String title,
+    required String subtitle,
+    required VoidCallback onTap,
+  }) {
+    return Bounce(
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        child: Row(
+          children: [
+            CommonImageView(imagePath: icon, height: 38),
+            Gap(14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  MyText(
+                    text: title,
+                    size: 16,
+                    weight: FontWeight.w600,
+                    color: kFontText,
+                  ),
+                  MyText(text: subtitle, size: 13, color: kFontText),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _divider() {
+    return Divider(height: 0, color: kDividerColor, indent: 16, endIndent: 16);
+  }
+}

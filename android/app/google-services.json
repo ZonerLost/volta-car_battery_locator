@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "33594735082",
+    "project_id": "battery-5c717",
+    "storage_bucket": "battery-5c717.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:33594735082:android:a286a4c0b4268ec19f5a93",
+        "android_client_info": {
+          "package_name": "com.example.fire_fighter"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCpsGZYFTv-yQZKdN70HUAhps8Fcp3Sqgk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
