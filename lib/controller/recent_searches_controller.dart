@@ -98,9 +98,27 @@ class RecentSearchesController extends GetxController {
 
   Future<void> clearAll() async {
     if (_uid == null) return;
-    final snap = await _recentRef.get();
-    for (final d in snap.docs) {
-      await d.reference.delete();
+
+    try {
+      isLoading.value = true;
+
+      // UI instantly clear (optional but nice)
+      searches.clear();
+
+      final snap = await _recentRef.get();
+      if (snap.docs.isEmpty) return;
+
+      final batch = _db.batch();
+      for (final d in snap.docs) {
+        batch.delete(d.reference);
+      }
+      await batch.commit();
+
+    } catch (e) {
+      Get.snackbar("Cache", "Failed to clear recent searches.");
+    } finally {
+      isLoading.value = false;
     }
   }
+
 }

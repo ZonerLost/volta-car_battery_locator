@@ -8,13 +8,14 @@ import '../model/app_users.dart';
 class HomeController extends GetxController {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _db = FirebaseFirestore.instance;
-
+  final isGuest = false.obs;
   CollectionReference<Map<String, dynamic>> get carsRef =>
       _db.collection("modules").doc("carDatabase").collection("cars");
 
   // USER
   final user = Rxn<AppUser>();
   String get fullName => user.value?.fullName ?? "User";
+
 
   // SELECTED
   final selectedMake = "".obs;
@@ -42,27 +43,47 @@ class HomeController extends GetxController {
   }
 
   Future<void> _bootstrap() async {
-    await loadUser();
-    await _warmUpCache(force: true);
-    await loadMakes();
-  }
+    try {
+      if (isGuest.value) {
+        // Guest: no firestore calls
+        await _warmUpCache(force: true); // (optional) agar ye bhi firestore hai to skip
+        await loadMakes();               // (optional) same
+        return;
+      }
 
+      await loadUser();
+      await _warmUpCache(force: true);
+      await loadMakes();
+    } catch (e) {
+      // app crash na ho
+      debugPrint("BOOTSTRAP ERROR: $e");
+    }
+  }
   @override
   void onClose() {
     super.onClose();
   }
 
   Future<void> loadUser() async {
-    final current = _auth.currentUser;
-    if (current == null) return;
+    try {
+      if (isGuest.value) return;
 
-    final doc = await _db.collection("users").doc(current.uid).get();
-    final data = doc.data();
-    if (data == null) return;
+      final current = _auth.currentUser;
+      if (current == null) return;
 
-    user.value = AppUser.fromMap(data);
+      final doc = await _db.collection("users").doc(current.uid).get();
+      final data = doc.data();
+      if (data == null) {
+        user.value = null;
+        return;
+      }
+
+      user.value = AppUser.fromMap(data);
+    } catch (e) {
+      debugPrint("LOAD USER ERROR: $e");
+      user.value = null;
+    }
   }
-
   bool get _cacheFresh {
     if (_cacheAt == null) return false;
     return DateTime.now().difference(_cacheAt!).inMinutes < 10;
@@ -219,6 +240,13 @@ class HomeController extends GetxController {
       }
     }
   }
+
+
+  void setGuestMode() {
+    isGuest.value = true;
+    user.value = null;
+  }
+
 
   bool get canLocate =>
       selectedMake.value.isNotEmpty &&

@@ -209,130 +209,166 @@ class DialogHelper {
     );
   }
 
-  static void LogoutDialog(
-      BuildContext context, {
-        required VoidCallback onConfirm,
-      }) {
-    showDialog(
-      context: context,
-      builder: (_) {
-        return AlertDialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-          title: const Text("Logout"),
-          content: const Text("Are you sure you want to logout?"),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text("Cancel"),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context); // close dialog first
-                onConfirm();            // then call controller logout
-              },
-              child: const Text("Logout"),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
   static void CacheDialog(
       BuildContext context, {
         required Future<void> Function() onConfirm,
       }) {
     Get.dialog(
-      StatefulBuilder(
-        builder: (context, setState) {
-          bool loading = false;
-
-          return AnimatedColumn(
-            animationDuration: 200,
-            mainAxisAlignment: MainAxisAlignment.center,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                margin: AppSizes.DEFAULT,
-                padding: const EdgeInsets.all(24),
-                decoration: const BoxDecoration(
-                  color: kWhite,
-                  borderRadius: BorderRadius.all(Radius.circular(16)),
-                ),
-                child: AnimatedColumn(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+      AnimatedColumn(
+        animationDuration: 200,
+        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            margin: AppSizes.DEFAULT,
+            padding: const EdgeInsets.all(24),
+            decoration: const BoxDecoration(
+              color: kWhite,
+              borderRadius: BorderRadius.all(Radius.circular(16)),
+            ),
+            child: AnimatedColumn(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        CommonImageView(
-                          imagePath: Assets.imagesCache,
-                          height: 40,
-                        ),
-                        Bounce(
-                          onTap: loading ? null : () => Get.back(),
-                          child: CommonImageView(
-                            imagePath: Assets.imagesClose,
-                            height: 24,
-                          ),
-                        ),
-                      ],
+                    CommonImageView(
+                      imagePath: Assets.imagesCache,
+                      height: 40,
                     ),
-                    const SizedBox(height: 16),
-                    const MyText(
-                      text: "Clear Cache & Offline Data",
-                      size: 24,
-                      color: kBlack,
-                      weight: FontWeight.w600,
-                    ),
-                    const MyText(
-                      text:
-                      "This removes stored searches and diagrams. You can still use the app, but offline access will be unavailable.",
-                      size: 16,
-                      color: kFontText7,
-                      paddingBottom: 24,
-                      weight: FontWeight.w500,
-                    ),
-
-                    // ✅ Clear Data
-                    MyButton(
-                      fontWeight: FontWeight.w600,
-                      backgroundColor: kPrimaryColor,
-                      buttonText: loading ? "Clearing..." : "Clear Data",
-                      fontColor: kWhite,
-                      onTap: loading
-                          ? () {}
-                          : () async {
-                        setState(() => loading = true);
-                        try {
-                          await onConfirm();
-                          Get.back(); // close dialog after success
-                        } catch (_) {
-                          setState(() => loading = false);
-                        }
-                      },
-                    ),
-
-                    const Gap(10),
-
-                    // ✅ Cancel
-                    MyButton(
-                      onTap: loading ? () {} : () => Get.back(),
-                      radius: 12,
-                      backgroundColor: kWhite,
-                      outlineColor: kBorderColor3,
-                      fontColor: kFontText,
-                      buttonText: "Cancel",
-                      hasgrad: true,
+                    Bounce(
+                      onTap: () => Get.back(),
+                      child: CommonImageView(
+                        imagePath: Assets.imagesClose,
+                        height: 24,
+                      ),
                     ),
                   ],
                 ),
-              ),
-            ],
-          );
-        },
+                const SizedBox(height: 16),
+                const MyText(
+                  text: "Clear Cache & Offline Data",
+                  size: 24,
+                  color: kBlack,
+                  weight: FontWeight.w600,
+                ),
+                const MyText(
+                  text:
+                  "This removes stored searches and diagrams. You can still use the app, but offline access will be unavailable.",
+                  size: 16,
+                  color: kFontText7,
+                  paddingBottom: 24,
+                  weight: FontWeight.w500,
+                ),
+
+                // ✅ CLEAR DATA button
+                MyButton(
+                  fontWeight: FontWeight.w600,
+                  backgroundColor: kPrimaryColor,
+                  buttonText: 'Clear Data',
+                  fontColor: kWhite,
+                  onTap: () async {
+                    // close dialog first
+                    Get.back();
+                    await onConfirm();
+                  },
+                ),
+
+                const SizedBox(height: 10),
+
+                MyButton(
+                  onTap: () => Get.back(),
+                  radius: 12,
+                  backgroundColor: kWhite,
+                  outlineColor: kBorderColor3,
+                  fontColor: kFontText,
+                  buttonText: "Cancel",
+                  hasgrad: true,
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+      barrierDismissible: false,
+    );
+  }
+
+  static void LogoutDialog(
+      BuildContext context, {
+        required Future<void> Function() onConfirm,
+      }) {
+    Get.dialog(
+      AnimatedColumn(
+        animationDuration: 200,
+        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            margin: AppSizes.DEFAULT,
+            padding: const EdgeInsets.all(24),
+            decoration: const BoxDecoration(
+              color: kWhite,
+              borderRadius: BorderRadius.all(Radius.circular(16)),
+            ),
+            child: AnimatedColumn(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    CommonImageView(imagePath: Assets.imagesLogout, height: 40),
+                    Bounce(
+                      onTap: () => Get.back(),
+                      child: CommonImageView(
+                        imagePath: Assets.imagesClose,
+                        height: 24,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                const MyText(
+                  text: "Confirm Logout?",
+                  size: 22,
+                  color: kBlack,
+                  weight: FontWeight.w600,
+                ),
+                const MyText(
+                  text:
+                  "You’re about to sign out of our app. Drafts are auto-saved and can be restored when you log back in.",
+                  size: 16,
+                  color: kFontText7,
+                  paddingBottom: 24,
+                  weight: FontWeight.w500,
+                ),
+
+                MyButton(
+                  fontWeight: FontWeight.w600,
+                  backgroundColor: kPrimaryColor,
+                  buttonText: 'Confirm, Logout',
+                  fontColor: kWhite,
+                  onTap: () async {
+                    Get.back();
+                    await onConfirm();
+                  },
+                ),
+
+                const SizedBox(height: 10),
+
+                MyButton(
+                  onTap: () => Get.back(),
+                  radius: 12,
+                  backgroundColor: kWhite,
+                  outlineColor: kBorderColor3,
+                  fontColor: kFontText,
+                  buttonText: "Cancel",
+                  hasgrad: true,
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
       barrierDismissible: false,
     );

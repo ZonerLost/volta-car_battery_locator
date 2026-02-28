@@ -5,6 +5,7 @@ import 'package:fire_fighter/views/screens/home/locate_battery.dart';
 import 'package:fire_fighter/views/screens/notifications/notifications.dart';
 import 'package:fire_fighter/views/widget/my_button_new.dart';
 import 'package:fire_fighter/views/widget/my_text_widget.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:fire_fighter/constants/app_colors.dart';
@@ -28,6 +29,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final user = FirebaseAuth.instance.currentUser;
+    final isGuest = user?.isAnonymous ?? false;
     return Scaffold(
       body: GestureDetector(
         behavior: HitTestBehavior.translucent,
@@ -38,32 +41,41 @@ class _HomeScreenState extends State<HomeScreen> {
             const Gap(50),
 
             /// 🔔 Notification Icon
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                Bounce(
-                  onTap: () => Get.to(() => NotificationScreen()),
-                  child: CommonImageView(
-                    imagePath: Assets.imagesBellRing,
-                    height: 24,
-                  ),
-                ),
-              ],
-            ),
+            // Row(
+            //   mainAxisAlignment: MainAxisAlignment.end,
+            //   children: [
+            //     Bounce(
+            //       onTap: () => Get.to(() => NotificationScreen()),
+            //       child: CommonImageView(
+            //         imagePath: Assets.imagesBellRing,
+            //         height: 24,
+            //       ),
+            //     ),
+            //   ],
+            // ),
 
             const Gap(16),
 
-            /// 👋 Welcome Text
-            Obx(() => Row(
+            Row(
               children: [
-                MyText(
-                  text: "Welcome ${hc.fullName}",
-                  size: 24,
-                  color: kFontText,
-                  weight: FontWeight.w700,
-                ),
+                Obx(() {
+                  // ✅ Force Rx read (always)
+                  final _ = hc.user.value; // just to register dependency
+                  final user = FirebaseAuth.instance.currentUser;
+                  final isGuest = user?.isAnonymous ?? false;
+
+                  final name = isGuest ? "User" : (hc.user.value?.fullName ?? "User");
+
+                  return MyText(
+                    text: "Welcome $name",
+                    size: 24,
+                    color: kFontText,
+                    weight: FontWeight.w700,
+                  );
+                }),
               ],
-            )),
+            ),
+
 
             MyText(
               text: "Locate the car battery easily by just entering make, model and year.",

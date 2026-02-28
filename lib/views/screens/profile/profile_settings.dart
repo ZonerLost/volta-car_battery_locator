@@ -10,6 +10,7 @@ import 'package:fire_fighter/views/screens/profile/privacy.dart';
 import 'package:fire_fighter/views/widget/common_image_view_widget.dart';
 import 'package:fire_fighter/views/widget/custom_animated_column.dart';
 import 'package:fire_fighter/views/widget/my_text_widget.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
@@ -35,22 +36,57 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
 
     /// ✅ Load profile once screen opens
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      c.refreshProfile();
+      final user = FirebaseAuth.instance.currentUser;
+      final isGuest = user?.isAnonymous ?? false;
+
+      if (!isGuest) {
+        c.refreshProfile(); // only real users
+      }
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    final user = FirebaseAuth.instance.currentUser;
+    final isGuest = user?.isAnonymous ?? false;
+
     return Scaffold(
       body: AnimatedListView(
         padding: const EdgeInsets.all(24),
         children: [
           Gap(50),
 
-          /// ✅ Profile Card (auto updates after edit)
-          Obx(() => Container(
+          // ✅ FIXED HEADER: Guest = no Obx, User = Obx
+          isGuest
+              ? Container(
             padding:
             const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+            decoration: BoxDecoration(
+              color: kWhite,
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(color: kBorderColor3),
+            ),
+            child: Row(
+              children: [
+                CommonImageView(
+                  imagePath: Assets.imagesProfile,
+                  height: 38,
+                ),
+                Gap(12),
+                Expanded(
+                  child: MyText(
+                    text: "User",
+                    size: 16,
+                    weight: FontWeight.w600,
+                    color: kFontText,
+                  ),
+                ),
+              ],
+            ),
+          )
+              : Obx(() => Container(
+            padding: const EdgeInsets.symmetric(
+                horizontal: 16, vertical: 18),
             decoration: BoxDecoration(
               color: kWhite,
               borderRadius: BorderRadius.circular(14),
@@ -90,14 +126,12 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                     final res =
                     await Get.to(() => const EditProfileScreen());
                     if (res == true) {
-                      await c.refreshProfile(); // ✅ refresh after update
+                      await c.refreshProfile();
                     }
                   },
                   child: Container(
                     padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 6,
-                    ),
+                        horizontal: 16, vertical: 6),
                     decoration: BoxDecoration(
                       color: kPrimaryColor,
                       borderRadius: BorderRadius.circular(8),
@@ -153,6 +187,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                       onConfirm: () async {
                         await c.clearCache();
                       },
+
                     );
                   },
                 ),
@@ -161,18 +196,20 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
 
                 _buildSettingTile(
                   icon: Assets.imagesLogout,
-                  title: "Logout",
-                  subtitle: "Sign out of your account.",
+                  title: isGuest ? "Exit Guest" : "Logout",
+                  subtitle: isGuest
+                      ? "Return to login screen."
+                      : "Sign out of your account.",
                   onTap: () {
-                    /// ✅ keep your dialog, but call controller logout inside confirm
                     DialogHelper.LogoutDialog(
                       context,
                       onConfirm: () async {
-                        await c.logout();
+                        await c.logout(context);
                       },
                     );
                   },
                 ),
+
                 _divider(),
 
                 _buildSettingTile(

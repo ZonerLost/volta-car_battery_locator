@@ -16,6 +16,8 @@ import 'package:fire_fighter/views/widget/my_button_new.dart';
 import 'package:fire_fighter/views/widget/my_text_widget.dart';
 import 'package:fire_fighter/views/widget/my_textfeild.dart';
 
+import '../../../controller/SessionController.dart';
+
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
@@ -27,7 +29,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final FocusNode _focusNodeEmail = FocusNode();
   final FocusNode _focusNodePassword = FocusNode();
 
-  // ✅ controller
+  final session = Get.put(SessionController());
   final LoginController c = Get.put(LoginController());
 
   @override
@@ -41,7 +43,7 @@ class _LoginScreenState extends State<LoginScreen> {
       },
       child: Scaffold(
         body: AnimatedListView(
-          padding: EdgeInsets.all(0),
+          padding: EdgeInsets.zero,
           children: [
             CommonImageView(
               imagePath: Assets.imagesLoginPhoto,
@@ -52,18 +54,14 @@ class _LoginScreenState extends State<LoginScreen> {
               padding: const EdgeInsets.all(32),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  Row(
-                    children: [
-                      MyText(
-                        text: "Welcome Back",
-                        size: 24,
-                        color: kFontText,
-                        weight: FontWeight.w700,
-                      ),
-                    ],
+                  MyText(
+                    text: "Welcome Back",
+                    size: 24,
+                    color: kFontText,
+                    weight: FontWeight.w700,
                   ),
+
                   MyText(
                     text: "Log in to continue saving time in the field.",
                     size: 20,
@@ -72,83 +70,82 @@ class _LoginScreenState extends State<LoginScreen> {
                     weight: FontWeight.w600,
                   ),
 
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                  /// ================= EMAIL =================
+                  MyText(
+                    text: "Email",
+                    size: 16,
+                    paddingBottom: 12,
+                    color: kFontText,
+                    weight: FontWeight.w700,
+                  ),
+
+                  MyTextField(
+                    controller: c.emailC,
+                    hint: "Enter your email",
+                    hintsize: 14,
+                    hintColor: kFontText5,
+                    hintWeight: FontWeight.w600,
+                    marginBottom: 12,
+                    prefix: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: CommonImageView(
+                        imagePath: Assets.imagesPerson,
+                        height: 24,
+                      ),
+                    ),
+                    borderColor: kBorderColor3,
+                    focusNode: _focusNodeEmail,
+                  ),
+
+                  /// ================= PASSWORD =================
+                  Row(
+                    spacing: 6,
                     children: [
                       MyText(
-                        text: "Email",
+                        text: "Password",
                         size: 16,
-                        paddingBottom: 12,
                         color: kFontText,
                         weight: FontWeight.w700,
                       ),
-                      MyTextField(
-                        controller: c.emailC,
-                        hint: "Enter your email ",
-                        hintsize: 14,
-                        hintColor: kFontText5,
-                        hintWeight: FontWeight.w600,
-                        marginBottom: 12,
-                        prefix: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: CommonImageView(
-                            imagePath: Assets.imagesPerson,
-                            height: 24,
-                          ),
-                        ),
-                        borderColor: kBorderColor3,
-                        focusNode: _focusNodeEmail,
+                      CommonImageView(
+                        imagePath: Assets.imagesPasswordIcon,
+                        height: 16,
                       ),
-                      Row(
-                        spacing: 6,
-                        children: [
-                          MyText(
-                            text: "Password",
-                            size: 16,
-                            color: kFontText,
-                            weight: FontWeight.w700,
-                          ),
-                          CommonImageView(
-                            imagePath: Assets.imagesPasswordIcon,
-                            height: 16,
-                          ),
-                        ],
-                      ),
-                      Gap(12),
-
-                      // ✅ password toggle (no UI change)
-                      Obx(() => MyTextField(
-                        controller: c.passwordC,
-                        hint: "Enter your password",
-                        hintsize: 14,
-                        hintWeight: FontWeight.w600,
-                        hintColor: kFontText5,
-                        marginBottom: 12,
-                        focusNode: _focusNodePassword,
-                        isObSecure: c.obscurePass.value, // ✅ your widget uses isObSecure
-                        prefix: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: CommonImageView(
-                            imagePath: Assets.imagesLock,
-                            height: 24,
-                          ),
-                        ),
-                        suffix: Bounce(
-                          onTap: () {
-                            c.obscurePass.value = !c.obscurePass.value;
-                          },
-                          child: CommonImageView(
-                            imagePath: Assets.imagesEye,
-                            height: 24,
-                          ),
-                        ),
-                      )),
                     ],
                   ),
 
+                  Gap(12),
+
+                  Obx(() => MyTextField(
+                    controller: c.passwordC,
+                    hint: "Enter your password",
+                    hintsize: 14,
+                    hintWeight: FontWeight.w600,
+                    hintColor: kFontText5,
+                    marginBottom: 12,
+                    focusNode: _focusNodePassword,
+                    isObSecure: c.obscurePass.value,
+                    prefix: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: CommonImageView(
+                        imagePath: Assets.imagesLock,
+                        height: 24,
+                      ),
+                    ),
+                    suffix: Bounce(
+                      onTap: () {
+                        c.obscurePass.value = !c.obscurePass.value;
+                      },
+                      child: CommonImageView(
+                        imagePath: Assets.imagesEye,
+                        height: 24,
+                      ),
+                    ),
+                  )),
+
+                  /// ================= FORGOT PASSWORD =================
                   Row(
                     mainAxisAlignment: MainAxisAlignment.end,
-                    spacing: 6,
                     children: [
                       MyText(
                         onTap: () {
@@ -156,14 +153,14 @@ class _LoginScreenState extends State<LoginScreen> {
                         },
                         text: "Forgot Password?",
                         size: 16,
-                        paddingBottom: 60,
+                        paddingBottom: 40,
                         color: kSecondaryColor,
                         weight: FontWeight.w600,
                       ),
                     ],
                   ),
 
-                  // ✅ Login button now authenticates
+                  /// ================= LOGIN BUTTON =================
                   Obx(() => MyButton(
                     onTap: c.isLoading.value
                         ? () {}
@@ -174,14 +171,19 @@ class _LoginScreenState extends State<LoginScreen> {
                       }
                     },
                     radius: 12,
-                    buttonText: c.isLoading.value ? "Please wait..." : "Login",
+                    buttonText: c.isLoading.value
+                        ? "Please wait..."
+                        : "Login",
                     hasgrad: true,
                   )),
 
                   Gap(20),
+
+                  /// ================= OR =================
                   Row(
                     children: [
-                      Expanded(child: Divider(color: kFontText, thickness: 1)),
+                      Expanded(
+                          child: Divider(color: kFontText, thickness: 1)),
                       Gap(10),
                       MyText(
                         text: "OR",
@@ -190,15 +192,67 @@ class _LoginScreenState extends State<LoginScreen> {
                         weight: FontWeight.w500,
                       ),
                       Gap(10),
-                      Expanded(child: Divider(color: kFontText, thickness: 1)),
+                      Expanded(
+                          child: Divider(color: kFontText, thickness: 1)),
                     ],
                   ),
+
                   Gap(20),
 
-                  // Guest: allow if you want (but Firestore rules will block reads if you require auth)
+                  /// ================= GOOGLE SIGN IN =================
+                  Obx(() => MyButton(
+                    onTap: () async {
+                      if (c.isLoading.value) return;
+
+                      final ok = await c.googleLogin();
+                      if (ok) {
+                        Get.offAll(() => BottomNavBar());
+                      }
+                    },
+                    radius: 12,
+                    backgroundColor: kWhite,
+                    outlineColor: kBorderColor3,
+                    fontColor: kFontText,
+                    buttonText: c.isLoading.value
+                        ? "Please wait..."
+                        : "Continue with Google",
+                    hasgrad: true,
+                  )),
+
+                  Gap(12),
+
+                  /// ================= APPLE SIGN IN =================
+                  if (GetPlatform.isIOS)
+                    Obx(() => MyButton(
+                      onTap: () async {
+                        if (c.isLoading.value) return;
+
+                        final ok = await c.appleLogin();
+                        if (ok) {
+                          Get.offAll(() => BottomNavBar());
+                        }
+                      },
+                      radius: 12,
+                      backgroundColor: kWhite,
+                      outlineColor: kBorderColor3,
+                      fontColor: kFontText,
+                      buttonText: c.isLoading.value
+                          ? "Please wait..."
+                          : "Continue with Apple",
+                      hasgrad: true,
+                    )),
+
+                  Gap(12),
+
+                  /// ================= GUEST =================
                   MyButton(
-                    onTap: () {
-                      Get.offAll(() => BottomNavBar());
+                    onTap: () async {
+                      if (c.isLoading.value) return;
+
+                      final ok = await c.guestLogin();
+                      if (ok) {
+                        Get.offAll(() => BottomNavBar());
+                      }
                     },
                     radius: 12,
                     backgroundColor: kWhite,
@@ -209,6 +263,8 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
 
                   Gap(28),
+
+                  /// ================= SIGN UP =================
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [

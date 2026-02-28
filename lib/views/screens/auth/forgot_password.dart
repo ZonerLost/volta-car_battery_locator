@@ -1,3 +1,4 @@
+// lib/views/screens/auth/forgot_password.dart
 // ignore_for_file: prefer_const_constructors
 
 import 'package:bounce/bounce.dart';
@@ -14,6 +15,8 @@ import 'package:fire_fighter/views/widget/my_button_new.dart';
 import 'package:fire_fighter/views/widget/my_text_widget.dart';
 import 'package:fire_fighter/views/widget/my_textfeild.dart';
 
+import '../../../controller/forgot_password_controller.dart';
+
 class ForgotPasswordScreen extends StatefulWidget {
   const ForgotPasswordScreen({super.key});
 
@@ -24,7 +27,14 @@ class ForgotPasswordScreen extends StatefulWidget {
 class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   final FocusNode _focusNodeEmail = FocusNode();
 
-  final _emailController = TextEditingController();
+  // ✅ controller (no UI change)
+  final ForgotPasswordController c = Get.put(ForgotPasswordController());
+
+  @override
+  void dispose() {
+    _focusNodeEmail.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -78,7 +88,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   ),
                   MyText(
                     text:
-                        "Enter your email, and we’ll send a link to reset your password.",
+                    "Enter your email, and we’ll send a link to reset your password.",
                     size: 20,
                     paddingBottom: 32,
                     color: kFontText7,
@@ -96,6 +106,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                         weight: FontWeight.w700,
                       ),
                       MyTextField(
+                        controller: c.emailC, // ✅ attach controller (no UI change)
                         hint: "e.g. Jandoe@gmail.com",
                         hintsize: 14,
                         hintColor: kFontText5,
@@ -114,14 +125,19 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     ],
                   ),
 
-                  MyButton(
-                    onTap: () {
-                      Get.to(() => ResetPasswordScreen());
+                  // ✅ Send reset email using Firebase
+                  Obx(() => MyButton(
+                    onTap: c.isLoading.value
+                        ? () {}
+                        : () async {
+                      await c.sendResetLink();
+                      // ✅ No navigation. User will reset via email link.
                     },
                     radius: 12,
-                    buttonText: "Send Reset Link",
+                    buttonText: c.isLoading.value ? "Please wait..." : "Send Reset Link",
                     hasgrad: true,
-                  ),
+                  )),
+
                   Gap(20),
                   Row(
                     children: [

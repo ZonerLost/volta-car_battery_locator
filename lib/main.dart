@@ -1,4 +1,6 @@
 import 'package:fire_fighter/constants/app_colors.dart';
+import 'package:fire_fighter/views/screens/auth/login.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:get/get.dart';
 import 'package:fire_fighter/config/routes/routes.dart';
@@ -27,10 +29,32 @@ class MyApp extends StatelessWidget {
       ),
       debugShowCheckedModeBanner: false,
       debugShowMaterialGrid: false,
-      initialRoute: AppLinks.splash_screen,
-      getPages: AppRoutes.pages,
+      initialRoute: AppRoutes.splash,
+      onGenerateRoute: AppRoutes.onGenerateRoute,
       defaultTransition: Transition.fadeIn,
       transitionDuration: const Duration(milliseconds: 500),
+    );
+  }
+}
+
+class Root extends StatelessWidget {
+  const Root({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<User?>(
+      stream: FirebaseAuth.instance.authStateChanges(),
+      builder: (_, snap) {
+        if (snap.connectionState == ConnectionState.waiting) {
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
+        }
+
+
+
+        return const LoginScreen();
+      },
     );
   }
 }

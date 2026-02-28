@@ -1,6 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:fire_fighter/controller/recent_searches_controller.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
+
+import '../config/routes/routes.dart';
 
 class ProfileSettingsController extends GetxController {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -55,25 +59,24 @@ class ProfileSettingsController extends GetxController {
   Future<void> refreshProfile() async => _loadProfile();
 
   /// Logout
-  Future<void> logout() async {
-    await _auth.signOut();
+  Future<void> logout(BuildContext context) async {
+    await _auth.signOut(); // ✅ important
+
+    Navigator.pushNamedAndRemoveUntil(
+      context,
+      AppRoutes.login,
+          (route) => false,
+    );
   }
+
+
 
   /// Cache clear hook (aap yahan apna recent searches / local storage clear kar sakte ho)
   Future<void> clearCache() async {
-    // Example:
-    // - clear recent searches controller list
-    // - clear any local db (Hive/SharedPrefs) if you are using
-    // Keep it safe no-op if not implemented.
-
-    // If you have a RecentSearchesController:
-    // if (Get.isRegistered<RecentSearchesController>()) {
-    //   Get.find<RecentSearchesController>().clearAll();
-    // }
-
-    // If you have SharedPreferences:
-    // final sp = await SharedPreferences.getInstance();
-    // await sp.remove("recent_searches");
+    if (Get.isRegistered<RecentSearchesController>()) {
+      await Get.find<RecentSearchesController>().clearAll();
+    }
   }
+
 }
 

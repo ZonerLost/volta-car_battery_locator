@@ -77,4 +77,42 @@ class LoginController extends GetxController {
       isLoading.value = false;
     }
   }
+
+  Future<bool> guestLogin() async {
+    try {
+      isLoading.value = true;
+      await _repo.signInAnonymously();
+      return true;
+    } catch (e) {
+      Get.snackbar("Guest Login Failed", e.toString());
+      return false;
+    } finally {
+      isLoading.value = false;
+    }
+  }
+  Future<bool> googleLogin() async {
+    try {
+      isLoading.value = true;
+      await _repo.signInWithGoogle();
+      return true;
+    } catch (e) {
+      Get.snackbar("Google Sign-In Failed", e.toString());
+      return false;
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  Future<bool> appleLogin() async {
+    try {
+      isLoading.value = true;
+      await _repo.signInWithApple();
+      return true;
+    } catch (e) {
+      Get.snackbar("Apple Sign-In Failed", e.toString());
+      return false;
+    } finally {
+      isLoading.value = false;
+    }
+  }
 }
