@@ -26,7 +26,7 @@ class LocateBatteryController extends GetxController {
         return;
       }
 
-      car.value = CarDetails.fromDoc(doc as DocumentSnapshot<Map<String, dynamic>>);
+      car.value = CarDetails.fromDoc(doc);
     } catch (e) {
       car.value = null;
       error.value = e.toString();

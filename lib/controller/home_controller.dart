@@ -201,20 +201,39 @@ class HomeController extends GetxController {
     for (final doc in _cache) {
       final data = doc.data();
 
-      final mkLower = (data["makeLower"] ?? data["makeKey"] ?? "").toString();
-      final mdLower = (data["modelLower"] ?? data["modelKey"] ?? "").toString();
+      final mkLower = (data["makeLower"] ?? data["makeKey"] ?? "").toString().toLowerCase();
+      final mdLower = (data["modelLower"] ?? data["modelKey"] ?? "").toString().toLowerCase();
 
       if (mkLower == makeKey && mdLower == modelKey) {
-        final yl = (data["yearLabel"] ?? "").toString().trim();
-        if (yl.isNotEmpty) labels.add(yl);
+        final rawYearLabel = (data["yearLabel"] ?? "").toString().trim();
+
+        if (rawYearLabel.isNotEmpty) {
+          labels.add(rawYearLabel);
+        } else {
+          final yearFrom = _parseInt(data["yearFrom"]);
+          final yearTo = _parseInt(data["yearTo"]);
+
+          if (yearFrom > 0 && yearTo > 0) {
+            labels.add(yearFrom == yearTo ? "$yearFrom" : "$yearFrom-$yearTo");
+          } else if (yearFrom > 0) {
+            labels.add("$yearFrom");
+          } else if (yearTo > 0) {
+            labels.add("$yearTo");
+          }
+        }
       }
     }
 
     final list = labels.toList()..sort();
     yearLabelSuggestions.assignAll(list);
-    yearLabelSuggestions.refresh(); // ✅ force rebuild
+    yearLabelSuggestions.refresh();
   }
 
+  int _parseInt(dynamic value) {
+    if (value is int) return value;
+    if (value is double) return value.toInt();
+    return int.tryParse(value?.toString() ?? '') ?? 0;
+  }
   // ================= SELECT YEAR + FETCH CARID =================
   Future<void> selectYearLabelAndFetchCarId(String yearLabel) async {
     if (selectedMake.value.isEmpty || selectedModel.value.isEmpty) return;
@@ -230,17 +249,30 @@ class HomeController extends GetxController {
     for (final doc in _cache) {
       final data = doc.data();
 
-      final mkLower = (data["makeLower"] ?? data["makeKey"] ?? "").toString();
-      final mdLower = (data["modelLower"] ?? data["modelKey"] ?? "").toString();
-      final yl = (data["yearLabel"] ?? "").toString();
+      final mkLower = (data["makeLower"] ?? data["makeKey"] ?? "").toString().toLowerCase();
+      final mdLower = (data["modelLower"] ?? data["modelKey"] ?? "").toString().toLowerCase();
 
-      if (mkLower == makeKey && mdLower == modelKey && yl == yearLabel) {
+      String docYearLabel = (data["yearLabel"] ?? "").toString().trim();
+
+      if (docYearLabel.isEmpty) {
+        final yearFrom = _parseInt(data["yearFrom"]);
+        final yearTo = _parseInt(data["yearTo"]);
+
+        if (yearFrom > 0 && yearTo > 0) {
+          docYearLabel = yearFrom == yearTo ? "$yearFrom" : "$yearFrom-$yearTo";
+        } else if (yearFrom > 0) {
+          docYearLabel = "$yearFrom";
+        } else if (yearTo > 0) {
+          docYearLabel = "$yearTo";
+        }
+      }
+
+      if (mkLower == makeKey && mdLower == modelKey && docYearLabel == yearLabel) {
         selectedCarId.value = doc.id;
         break;
       }
     }
   }
-
 
   void setGuestMode() {
     isGuest.value = true;

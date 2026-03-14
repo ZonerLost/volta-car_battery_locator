@@ -1,18 +1,18 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:bounce/bounce.dart';
+import 'package:fire_fighter/constants/app_colors.dart';
 import 'package:fire_fighter/controller/locate_battery_controller.dart';
 import 'package:fire_fighter/controller/recent_searches_controller.dart';
+import 'package:fire_fighter/generated/assets.dart';
 import 'package:fire_fighter/model/car_details.dart';
 import 'package:fire_fighter/views/screens/dialogs/dialogs.dart';
+import 'package:fire_fighter/views/widget/common_image_view_widget.dart';
+import 'package:fire_fighter/views/widget/custom_animated_column.dart';
 import 'package:fire_fighter/views/widget/my_button_new.dart';
 import 'package:fire_fighter/views/widget/my_text_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
-import 'package:fire_fighter/constants/app_colors.dart';
-import 'package:fire_fighter/generated/assets.dart';
-import 'package:fire_fighter/views/widget/common_image_view_widget.dart';
-import 'package:fire_fighter/views/widget/custom_animated_column.dart';
 import 'package:get/get.dart';
 
 class LocateBatteryScreen extends StatefulWidget {
@@ -34,17 +34,12 @@ class _LocateBatteryScreenState extends State<LocateBatteryScreen> {
   @override
   void initState() {
     super.initState();
-
-    // ✅ tagged instance (safe per carId)
     c = Get.put(LocateBatteryController(), tag: widget.carId);
-
-    // fetch
     c.fetchCarById(widget.carId);
   }
 
   @override
   void dispose() {
-    // ✅ clean tagged controller
     if (Get.isRegistered<LocateBatteryController>(tag: widget.carId)) {
       Get.delete<LocateBatteryController>(tag: widget.carId);
     }
@@ -59,7 +54,6 @@ class _LocateBatteryScreenState extends State<LocateBatteryScreen> {
         children: [
           Gap(50),
 
-          // back
           Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
@@ -110,7 +104,6 @@ class _LocateBatteryScreenState extends State<LocateBatteryScreen> {
 
             final CarDetails car = c.car.value!;
 
-            // ✅ save recent once (optional)
             if (!_saved) {
               _saved = true;
 
@@ -126,7 +119,6 @@ class _LocateBatteryScreenState extends State<LocateBatteryScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // title
                   MyText(
                     text: "${car.make} ${car.model} (${car.yearLabel})",
                     size: 24,
@@ -135,14 +127,14 @@ class _LocateBatteryScreenState extends State<LocateBatteryScreen> {
                   ),
 
                   MyText(
-                    text: "Battery location identified below. Follow the blinking marker.",
+                    text:
+                    "Battery location identified below. Follow the blinking marker.",
                     size: 16,
                     color: kFontText7,
                     weight: FontWeight.w600,
                   ),
 
-                  // ✅ location card (highlighted)
-                  if (car.location.trim().isNotEmpty) ...[
+                  if (car.description.trim().isNotEmpty) ...[
                     Gap(16),
                     Container(
                       padding: const EdgeInsets.all(12),
@@ -155,14 +147,14 @@ class _LocateBatteryScreenState extends State<LocateBatteryScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           MyText(
-                            text: "Location",
+                            text: "Battery Location",
                             size: 16,
                             color: kFontText,
                             weight: FontWeight.w700,
                           ),
                           Gap(6),
                           MyText(
-                            text: car.location,
+                            text: car.description,
                             size: 14,
                             color: kFontText7,
                             weight: FontWeight.w500,
@@ -174,19 +166,13 @@ class _LocateBatteryScreenState extends State<LocateBatteryScreen> {
 
                   Gap(30),
 
-                  // ✅ diagram image (fallback to thumbnail, then asset)
                   ClipRRect(
                     borderRadius: BorderRadius.circular(12),
-                    child: _NetworkImageWithFallback(
-                      primaryUrl: car.diagramUrl,
-                      secondaryUrl: car.thumbnailUrl,
-                      assetFallback: Assets.imagesCarSs,
-                    ),
+                    child: BatteryDiagramWithMarker(car: car),
                   ),
 
                   Gap(44),
 
-                  // Correct
                   MyButton(
                     onTap: () {
                       DialogHelper.FeedbackSentDialog(context);
@@ -201,7 +187,6 @@ class _LocateBatteryScreenState extends State<LocateBatteryScreen> {
                   ),
                   Gap(12),
 
-                  // Issue Report
                   MyButton(
                     onTap: () {
                       DialogHelper.FeedbackSentDialog(context);
@@ -226,48 +211,104 @@ class _LocateBatteryScreenState extends State<LocateBatteryScreen> {
   }
 }
 
-/// ✅ Helper widget: tries primary URL, then secondary, then asset
-class _NetworkImageWithFallback extends StatelessWidget {
-  final String primaryUrl;
-  final String secondaryUrl;
-  final String assetFallback;
+class BatteryDiagramWithMarker extends StatelessWidget {
+  final CarDetails car;
 
-  const _NetworkImageWithFallback({
-    required this.primaryUrl,
-    required this.secondaryUrl,
-    required this.assetFallback,
+  const BatteryDiagramWithMarker({
+    super.key,
+    required this.car,
   });
 
   @override
   Widget build(BuildContext context) {
-    final hasPrimary = primaryUrl.trim().isNotEmpty;
-    final hasSecondary = secondaryUrl.trim().isNotEmpty;
+    final marker = car.marker;
+    final hasMarker = marker != null && car.markerStatus == "set";
 
-    if (hasPrimary) {
-      return Image.network(
-        primaryUrl,
-        fit: BoxFit.cover,
-        errorBuilder: (_, __, ___) {
-          if (hasSecondary) {
-            return Image.network(
-              secondaryUrl,
-              fit: BoxFit.cover,
-              errorBuilder: (_, __, ___) => CommonImageView(imagePath: assetFallback),
-            );
-          }
-          return CommonImageView(imagePath: assetFallback);
+    return AspectRatio(
+      aspectRatio: 0.62,
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final width = constraints.maxWidth;
+          final height = constraints.maxHeight;
+
+          final left = hasMarker ? (marker.xPct / 100) * width : 0.0;
+          final top = hasMarker ? (marker.yPct / 100) * height : 0.0;
+
+          return Stack(
+            children: [
+              Positioned.fill(
+                child: Image.asset(
+                  "assets/images/car1.jpeg",
+                  fit: BoxFit.contain,
+                ),
+              ),
+              if (hasMarker)
+                Positioned(
+                  left: left,
+                  top: top,
+                  child: Transform.translate(
+                    offset: const Offset(-18, -18),
+                    child: const _BlinkingBatteryMarker(),
+                  ),
+                ),
+            ],
+          );
         },
-      );
-    }
+      ),
+    );
+  }
+}
+class _BlinkingBatteryMarker extends StatefulWidget {
+  const _BlinkingBatteryMarker();
 
-    if (hasSecondary) {
-      return Image.network(
-        secondaryUrl,
-        fit: BoxFit.cover,
-        errorBuilder: (_, __, ___) => CommonImageView(imagePath: assetFallback),
-      );
-    }
+  @override
+  State<_BlinkingBatteryMarker> createState() =>
+      _BlinkingBatteryMarkerState();
+}
 
-    return CommonImageView(imagePath: assetFallback);
+class _BlinkingBatteryMarkerState extends State<_BlinkingBatteryMarker>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 900),
+    )..repeat(reverse: true);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FadeTransition(
+      opacity: Tween<double>(begin: 0.35, end: 1).animate(_controller),
+      child: Container(
+        width: 36,
+        height: 36,
+        decoration: BoxDecoration(
+          color: Colors.red,
+          shape: BoxShape.circle,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.red.withOpacity(0.35),
+              blurRadius: 10,
+              spreadRadius: 3,
+            ),
+          ],
+        ),
+        child: const Icon(
+          Icons.battery_alert,
+          color: Colors.white,
+          size: 20,
+        ),
+      ),
+    );
   }
 }

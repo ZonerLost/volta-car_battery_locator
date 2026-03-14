@@ -208,7 +208,7 @@ class Assets {
 
   /// Assets for imagesLogoNew
   /// assets/images/logo_new.png
-  static const String imagesLogoNew = "assets/images/logo_new.png";
+  static const String imagesLogoNew = "assets/images/logo1.jpeg";
 
   /// Assets for imagesLogout
   /// assets/images/logout.png
