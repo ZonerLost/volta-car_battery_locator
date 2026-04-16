@@ -51,8 +51,6 @@ class Root extends StatelessWidget {
           );
         }
 
-
-
         return const LoginScreen();
       },
     );

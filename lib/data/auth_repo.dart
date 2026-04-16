@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:crypto/crypto.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
@@ -12,8 +13,8 @@ class AuthRepo {
   final FirebaseFirestore _db;
 
   AuthRepo({FirebaseAuth? auth, FirebaseFirestore? db})
-      : _auth = auth ?? FirebaseAuth.instance,
-        _db = db ?? FirebaseFirestore.instance;
+    : _auth = auth ?? FirebaseAuth.instance,
+      _db = db ?? FirebaseFirestore.instance;
 
   // =========================
   // EMAIL/PASSWORD SIGNUP
@@ -46,10 +47,7 @@ class AuthRepo {
   // =========================
   // EMAIL/PASSWORD LOGIN
   // =========================
-  Future<void> login({
-    required String email,
-    required String password,
-  }) async {
+  Future<void> login({required String email, required String password}) async {
     try {
       final cred = await _auth.signInWithEmailAndPassword(
         email: email,
@@ -101,24 +99,33 @@ class AuthRepo {
   // GOOGLE SIGN IN
   // =========================
   Future<UserCredential> signInWithGoogle() async {
-    final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
-    if (googleUser == null) {
-      throw Exception("Google sign-in cancelled");
+    late final UserCredential userCred;
+
+    if (!kIsWeb && defaultTargetPlatform == TargetPlatform.iOS) {
+      final provider =
+          GoogleAuthProvider()
+            ..addScope('email')
+            ..setCustomParameters({'prompt': 'select_account'});
+
+      userCred = await _auth.signInWithProvider(provider);
+    } else {
+      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+      if (googleUser == null) {
+        throw Exception("Google sign-in cancelled");
+      }
+
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
+
+      final credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+
+      userCred = await _auth.signInWithCredential(credential);
     }
 
-    final GoogleSignInAuthentication googleAuth =
-    await googleUser.authentication;
-
-    final credential = GoogleAuthProvider.credential(
-      accessToken: googleAuth.accessToken,
-      idToken: googleAuth.idToken,
-    );
-
-    final userCred = await _auth.signInWithCredential(credential);
-
-    // optional: ensure user doc exists
     await _ensureUserDoc(userCred.user);
-
     return userCred;
   }
 
@@ -137,10 +144,9 @@ class AuthRepo {
       nonce: nonce,
     );
 
-    final oauthCredential = OAuthProvider("apple.com").credential(
-      idToken: appleCredential.identityToken,
-      rawNonce: rawNonce,
-    );
+    final oauthCredential = OAuthProvider(
+      "apple.com",
+    ).credential(idToken: appleCredential.identityToken, rawNonce: rawNonce);
 
     final userCred = await _auth.signInWithCredential(oauthCredential);
 
@@ -159,25 +165,31 @@ class AuthRepo {
   // HELPERS
   // =========================
 
-  Future<void> _ensureUserDoc(User? user,
-      {AuthorizationCredentialAppleID? appleCredential}) async {
+  Future<void> _ensureUserDoc(
+    User? user, {
+    AuthorizationCredentialAppleID? appleCredential,
+  }) async {
     if (user == null) return;
 
     // Apple full name/email only first time sometimes
-    final fullNameFromApple = appleCredential == null
-        ? null
-        : [
-      appleCredential.givenName,
-      appleCredential.familyName,
-    ].where((e) => (e ?? "").trim().isNotEmpty).join(" ").trim();
+    final fullNameFromApple =
+        appleCredential == null
+            ? null
+            : [
+              appleCredential.givenName,
+              appleCredential.familyName,
+            ].where((e) => (e ?? "").trim().isNotEmpty).join(" ").trim();
 
     final docRef = _db.collection("users").doc(user.uid);
     await docRef.set({
       "uid": user.uid,
       "email": user.email ?? appleCredential?.email ?? "",
-      "fullName": (user.displayName?.trim().isNotEmpty ?? false)
-          ? user.displayName!.trim()
-          : (fullNameFromApple?.isNotEmpty == true ? fullNameFromApple : "User"),
+      "fullName":
+          (user.displayName?.trim().isNotEmpty ?? false)
+              ? user.displayName!.trim()
+              : (fullNameFromApple?.isNotEmpty == true
+                  ? fullNameFromApple
+                  : "User"),
       "updatedAt": FieldValue.serverTimestamp(),
       "lastLoginAt": FieldValue.serverTimestamp(),
       "createdAt": FieldValue.serverTimestamp(),
@@ -190,7 +202,7 @@ class AuthRepo {
     final random = Random.secure();
     return List.generate(
       length,
-          (_) => charset[random.nextInt(charset.length)],
+      (_) => charset[random.nextInt(charset.length)],
     ).join();
   }
 

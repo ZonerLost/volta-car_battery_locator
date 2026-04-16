@@ -37,7 +37,7 @@ class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 MyText(
-                  text: "Privacy & Terms",
+                  text: "Privacy & Terms ",
                   size: 20,
                   paddingBottom: 18,
                   weight: FontWeight.w700,
