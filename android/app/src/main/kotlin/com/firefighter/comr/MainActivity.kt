@@ -1,4 +1,4 @@
-package com.firefighter.com
+package com.firefighter.comr
 
 import io.flutter.embedding.android.FlutterActivity
 

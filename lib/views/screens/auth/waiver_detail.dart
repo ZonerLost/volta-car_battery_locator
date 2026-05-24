@@ -1,15 +1,11 @@
-import 'package:fire_fighter/views/screens/bottom_nav/BottomBarNav.dart';
-import 'package:fire_fighter/views/widget/my_button_new.dart';
-import 'package:get/get.dart';
-import 'package:fire_fighter/constants/app_fonts.dart';
-import 'package:flutter/material.dart';
-import 'package:gap/gap.dart';
 import 'package:fire_fighter/constants/app_colors.dart';
-import 'package:fire_fighter/constants/app_sizes.dart';
+import 'package:fire_fighter/constants/extensions.dart';
+import 'package:fire_fighter/views/screens/bottom_nav/BottomBarNav.dart';
 import 'package:fire_fighter/views/widget/app_bar.dart';
-import 'package:fire_fighter/views/widget/custom_animated_column.dart';
+import 'package:fire_fighter/views/widget/my_button_new.dart';
 import 'package:fire_fighter/views/widget/my_text_widget.dart';
-import 'package:get/get_connect/http/src/utils/utils.dart';
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class WavierDetailScreen extends StatefulWidget {
   const WavierDetailScreen({super.key});
@@ -19,14 +15,48 @@ class WavierDetailScreen extends StatefulWidget {
 }
 
 class _WavierDetailScreenState extends State<WavierDetailScreen> {
+  static const _sections = [
+    _WaiverSection(
+      title: "Assumption of Risk",
+      details:
+          "I understand that using battery location services may involve travel, roadside stops, third-party shops, and normal vehicle-related risks.",
+    ),
+    _WaiverSection(
+      title: "Release of Liability",
+      details:
+          "I agree that Volta, its team, partners, and listed providers are not responsible for injury, loss, damage, service quality, pricing, or delays outside the app's control.",
+    ),
+    _WaiverSection(
+      title: "Personal Responsibility",
+      details:
+          "I will verify provider details, follow safety guidelines, and make my own decisions before buying, replacing, or servicing a vehicle battery.",
+    ),
+    _WaiverSection(
+      title: "Consent to Terms",
+      details:
+          "By accepting, I confirm that I have read and agree to the Terms & Conditions, Privacy Policy, and this waiver.",
+    ),
+  ];
+
   @override
   Widget build(BuildContext context) {
+    final compact = context.screenHeight < 720;
+    final tight = context.screenHeight < 640;
+    final horizontalPadding = context.rs(compact ? 18 : 24, min: 16);
+    final sectionGap = context.rs(tight ? 8 : 12, min: 7);
+
     return Scaffold(
       backgroundColor: kWhite,
-      body: Stack(
-        children: [
-          AnimatedListView(
-            padding: AppSizes.DEFAULT,
+      body: SafeArea(
+        child: Padding(
+          padding: EdgeInsets.fromLTRB(
+            horizontalPadding,
+            context.rs(8, min: 6),
+            horizontalPadding,
+            context.rs(18, min: 14),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               HeaderAppBar(
                 title: "",
@@ -36,199 +66,100 @@ class _WavierDetailScreenState extends State<WavierDetailScreen> {
                 paddingLeft: 0,
                 paddingRight: 0,
               ),
-              Padding(
-                padding: const EdgeInsets.all(10),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    MyText(
-                      text: "User Waiver & Release of Liability",
-                      size: 20,
-                      paddingBottom: 18,
-
-                      weight: FontWeight.w500,
-                      color: kBlack,
-                      textAlign: TextAlign.start,
-                    ),
-                    MyText(
-                      text:
-                          "By booking and participating in activities at this club, you acknowledge and agree to the following:",
-                      size: 16,
-                      weight: FontWeight.w500,
-                      lineHeight: 0,
-                      color: kFontText8,
-                      paddingBottom: 18,
-
-                      textAlign: TextAlign.start,
-                    ),
-                    MyText(
-                      text: "Assumption of Risk",
-                      size: 16,
-                      paddingBottom: 18,
-
-                      weight: FontWeight.w500,
-                      color: kBlack,
-                      textAlign: TextAlign.start,
-                    ),
-
-                    Padding(
-                      padding: const EdgeInsets.only(left: 24.0),
-                      child: Column(
-                        children: [
-                          BulletRow(
-                            Text:
-                                'Playing sports such as tennis, padel, or squash involves physical activity and carries a risk of accidents, falls, or injuries.',
-                          ),
-                          Gap(18),
-                          BulletRow(
-                            Text:
-                                'You voluntarily choose to participate with full knowledge of these risks.',
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
+              MyText(
+                text: "Waiver & Liability Release",
+                size: tight ? 18 : 20,
+                lineHeight: 1.2,
+                paddingTop: tight ? 4 : 8,
+                paddingBottom: tight ? 6 : 10,
+                weight: FontWeight.w700,
+                color: kBlack,
+                textAlign: TextAlign.start,
               ),
-              Padding(
-                padding: const EdgeInsets.all(10),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    MyText(
-                      text: "Release of Liability",
-                      size: 16,
-                      paddingBottom: 18,
-
-                      weight: FontWeight.w500,
-                      color: kBlack,
-                      textAlign: TextAlign.start,
-                    ),
-
-                    Padding(
-                      padding: const EdgeInsets.only(left: 24.0),
-                      child: Column(
-                        children: [
-                          BulletRow(
-                            Text:
-                                "The club, its staff, coaches, and affiliates will not be held responsible for any injuries, accidents, medical conditions, or property loss that may occur while using the facilities or participating in lessons, clinics, or matches.",
-                          ),
-                          Gap(18),
-                          BulletRow(
-                            Text:
-                                "By accepting this waiver, you release the club from any legal or financial responsibility related to such incidents",
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
+              MyText(
+                text:
+                    "Please review and accept these points before continuing.",
+                size: tight ? 13 : 14,
+                lineHeight: 1.3,
+                paddingBottom: sectionGap,
+                weight: FontWeight.w500,
+                color: kFontText8,
+                textAlign: TextAlign.start,
               ),
-              Padding(
-                padding: const EdgeInsets.all(10),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    MyText(
-                      text: "Personal Responsibility",
-                      size: 16,
-                      paddingBottom: 18,
-
-                      weight: FontWeight.w500,
-                      color: kBlack,
-                      textAlign: TextAlign.start,
-                    ),
-
-                    Padding(
-                      padding: const EdgeInsets.only(left: 24.0),
-                      child: Column(
-                        children: [
-                          BulletRow(
-                            Text:
-                                "You agree to take full responsibility for your health, safety, and actions while on club premises.",
-                          ),
-                          Gap(18),
-                          BulletRow(
-                            Text:
-                                "If you have any medical conditions or concerns, you are encouraged to consult a physician before participating.",
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(10),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    MyText(
-                      text: "Consent to Terms",
-                      size: 16,
-                      paddingBottom: 18,
-
-                      weight: FontWeight.w500,
-                      color: kBlack,
-                      textAlign: TextAlign.start,
-                    ),
-
-                    Padding(
-                      padding: const EdgeInsets.only(left: 24.0),
-                      child: Column(
-                        children: [
-                          BulletRow(
-                            Text:
-                                "By checking the box below and continuing, you confirm that you have read, understood, and accepted these terms as a condition of using the platform and club facilities.",
-                          ),
-                          Gap(18),
-                          BulletRow(
-                            Text:
-                                "By checking the box below and continuing, you confirm that you have read, understood, and accepted these terms as a condition of using the platform and club facilities.",
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
+              for (final section in _sections) ...[
+                _WaiverPoint(section: section, tight: tight),
+                SizedBox(height: sectionGap),
+              ],
+              const Spacer(),
+              MyButton(
+                onTap: () {
+                  Get.offAll(() => const BottomNavBar());
+                },
+                radius: 12,
+                buttonText: "Agree & Accept",
+                hasgrad: true,
               ),
             ],
           ),
-          Positioned(
-            bottom: 40,
-            left: 32,
-            right: 32,
-            child: MyButton(
-              onTap: () {
-                Get.offAll( () => const BottomNavBar());
-              },
-              radius: 12,
-              buttonText: "Agree & Accept",
-              hasgrad: true,
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }
+}
 
-  Row BulletRow({required String Text}) {
+class _WaiverPoint extends StatelessWidget {
+  const _WaiverPoint({required this.section, required this.tight});
+
+  final _WaiverSection section;
+  final bool tight;
+
+  @override
+  Widget build(BuildContext context) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        MyText(text: "\u2022", size: 20, color: kFontText),
-
-        const SizedBox(width: 8), // Space between bullet and text
+        Container(
+          width: context.rs(tight ? 7 : 8, min: 6),
+          height: context.rs(tight ? 7 : 8, min: 6),
+          margin: EdgeInsets.only(top: context.rs(tight ? 7 : 8, min: 6)),
+          decoration: const BoxDecoration(
+            color: kSecondaryColor,
+            shape: BoxShape.circle,
+          ),
+        ),
+        SizedBox(width: context.rs(10, min: 8)),
         Expanded(
-          child: MyText(
-            text: Text,
-            size: 14,
-            weight: FontWeight.w600,
-            color: kFontText,
-            textAlign: TextAlign.start,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              MyText(
+                text: section.title,
+                size: tight ? 14 : 15,
+                lineHeight: 1.2,
+                paddingBottom: tight ? 2 : 4,
+                weight: FontWeight.w700,
+                color: kBlack,
+                textAlign: TextAlign.start,
+              ),
+              MyText(
+                text: section.details,
+                size: tight ? 12 : 13,
+                lineHeight: 1.28,
+                weight: FontWeight.w500,
+                color: kFontText,
+                textAlign: TextAlign.start,
+              ),
+            ],
           ),
         ),
       ],
     );
   }
+}
+
+class _WaiverSection {
+  const _WaiverSection({required this.title, required this.details});
+
+  final String title;
+  final String details;
 }

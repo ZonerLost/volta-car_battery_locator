@@ -4,10 +4,7 @@ class BatteryMarker {
   final double xPct;
   final double yPct;
 
-  BatteryMarker({
-    required this.xPct,
-    required this.yPct,
-  });
+  BatteryMarker({required this.xPct, required this.yPct});
 
   factory BatteryMarker.fromMap(Map<String, dynamic>? map) {
     return BatteryMarker(
@@ -25,6 +22,7 @@ class CarDetails {
   final int yearTo;
   final String location;
   final String description;
+  final int batteryCount;
   final String diagramUrl;
   final String thumbnailUrl;
   final String templateId;
@@ -39,6 +37,7 @@ class CarDetails {
     required this.yearTo,
     required this.location,
     required this.description,
+    required this.batteryCount,
     required this.diagramUrl,
     required this.thumbnailUrl,
     required this.templateId,
@@ -63,15 +62,15 @@ class CarDetails {
       yearTo: _parseInt(data['yearTo']),
       location: (data['location'] ?? '').toString(),
       description: (data['description'] ?? '').toString(),
+      batteryCount: _parseInt(data['batteryCount']),
       diagramUrl: (data['diagramUrl'] ?? '').toString(),
       thumbnailUrl: (data['thumbnailUrl'] ?? '').toString(),
       templateId: (data['templateId'] ?? '').toString(),
       markerStatus: (data['markerStatus'] ?? '').toString(),
-      marker: data['marker'] != null
-          ? BatteryMarker.fromMap(
-        Map<String, dynamic>.from(data['marker']),
-      )
-          : null,
+      marker:
+          data['marker'] != null
+              ? BatteryMarker.fromMap(Map<String, dynamic>.from(data['marker']))
+              : null,
     );
   }
 

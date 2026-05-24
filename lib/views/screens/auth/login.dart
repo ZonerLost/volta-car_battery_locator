@@ -5,9 +5,9 @@ import 'package:fire_fighter/views/screens/auth/forgot_password.dart';
 import 'package:fire_fighter/views/screens/bottom_nav/BottomBarNav.dart';
 import 'package:bounce/bounce.dart';
 import 'package:flutter/material.dart';
-import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 import 'package:fire_fighter/constants/app_colors.dart';
+import 'package:fire_fighter/constants/extensions.dart';
 import 'package:fire_fighter/generated/assets.dart';
 import 'package:fire_fighter/views/screens/auth/signup.dart';
 import 'package:fire_fighter/views/widget/common_image_view_widget.dart';
@@ -34,6 +34,10 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final compact = context.screenHeight < 720;
+    final horizontalPadding = context.rs(compact ? 22 : 28, min: 20);
+    final heroHeight = context.hp(compact ? 18 : 22).clamp(118, 180).toDouble();
+
     return GestureDetector(
       onTap: () {
         if (_focusNodeEmail.hasFocus || _focusNodePassword.hasFocus) {
@@ -47,25 +51,32 @@ class _LoginScreenState extends State<LoginScreen> {
           children: [
             CommonImageView(
               imagePath: Assets.imagesLoginPhoto,
-              width: Get.width,
+              width: context.screenWidth,
+              height: heroHeight,
+              fit: BoxFit.cover,
             ),
             Container(
               color: kbackground,
-              padding: const EdgeInsets.all(32),
+              padding: EdgeInsets.fromLTRB(
+                horizontalPadding,
+                context.rs(compact ? 18 : 24, min: 16),
+                horizontalPadding,
+                context.rs(18, min: 14),
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   MyText(
                     text: "Welcome Back",
-                    size: 24,
+                    size: compact ? 22 : 24,
                     color: kFontText,
                     weight: FontWeight.w700,
                   ),
 
                   MyText(
                     text: "Log in to continue saving time in the field.",
-                    size: 20,
-                    paddingBottom: 32,
+                    size: compact ? 16 : 18,
+                    paddingBottom: compact ? 18 : 24,
                     color: kFontText7,
                     weight: FontWeight.w600,
                   ),
@@ -74,7 +85,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   MyText(
                     text: "Email",
                     size: 16,
-                    paddingBottom: 12,
+                    paddingBottom: 8,
                     color: kFontText,
                     weight: FontWeight.w700,
                   ),
@@ -85,7 +96,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     hintsize: 14,
                     hintColor: kFontText5,
                     hintWeight: FontWeight.w600,
-                    marginBottom: 12,
+                    marginBottom: compact ? 8 : 10,
                     prefix: Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: CommonImageView(
@@ -114,34 +125,36 @@ class _LoginScreenState extends State<LoginScreen> {
                     ],
                   ),
 
-                  Gap(12),
+                  context.rs(compact ? 8 : 10).vSpace,
 
-                  Obx(() => MyTextField(
-                    controller: c.passwordC,
-                    hint: "Enter your password",
-                    hintsize: 14,
-                    hintWeight: FontWeight.w600,
-                    hintColor: kFontText5,
-                    marginBottom: 12,
-                    focusNode: _focusNodePassword,
-                    isObSecure: c.obscurePass.value,
-                    prefix: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: CommonImageView(
-                        imagePath: Assets.imagesLock,
-                        height: 24,
+                  Obx(
+                    () => MyTextField(
+                      controller: c.passwordC,
+                      hint: "Enter your password",
+                      hintsize: 14,
+                      hintWeight: FontWeight.w600,
+                      hintColor: kFontText5,
+                      marginBottom: compact ? 6 : 8,
+                      focusNode: _focusNodePassword,
+                      isObSecure: c.obscurePass.value,
+                      prefix: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: CommonImageView(
+                          imagePath: Assets.imagesLock,
+                          height: 24,
+                        ),
+                      ),
+                      suffix: Bounce(
+                        onTap: () {
+                          c.obscurePass.value = !c.obscurePass.value;
+                        },
+                        child: CommonImageView(
+                          imagePath: Assets.imagesEye,
+                          height: 24,
+                        ),
                       ),
                     ),
-                    suffix: Bounce(
-                      onTap: () {
-                        c.obscurePass.value = !c.obscurePass.value;
-                      },
-                      child: CommonImageView(
-                        imagePath: Assets.imagesEye,
-                        height: 24,
-                      ),
-                    ),
-                  )),
+                  ),
 
                   /// ================= FORGOT PASSWORD =================
                   Row(
@@ -153,7 +166,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         },
                         text: "Forgot Password?",
                         size: 16,
-                        paddingBottom: 40,
+                        paddingBottom: compact ? 16 : 22,
                         color: kSecondaryColor,
                         weight: FontWeight.w600,
                       ),
@@ -161,73 +174,51 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
 
                   /// ================= LOGIN BUTTON =================
-                  Obx(() => MyButton(
-                    onTap: c.isLoading.value
-                        ? () {}
-                        : () async {
-                      final ok = await c.login();
-                      if (ok) {
-                        Get.offAll(() => BottomNavBar());
-                      }
-                    },
-                    radius: 12,
-                    buttonText: c.isLoading.value
-                        ? "Please wait..."
-                        : "Login",
-                    hasgrad: true,
-                  )),
+                  Obx(
+                    () => MyButton(
+                      onTap:
+                          c.isLoading.value
+                              ? () {}
+                              : () async {
+                                final ok = await c.login();
+                                if (ok) {
+                                  Get.offAll(() => BottomNavBar());
+                                }
+                              },
+                      radius: 12,
+                      buttonText:
+                          c.isLoading.value ? "Please wait..." : "Login",
+                      hasgrad: true,
+                    ),
+                  ),
 
-                  Gap(20),
+                  context.rs(compact ? 12 : 16).vSpace,
 
                   /// ================= OR =================
                   Row(
                     children: [
-                      Expanded(
-                          child: Divider(color: kFontText, thickness: 1)),
-                      Gap(10),
+                      Expanded(child: Divider(color: kFontText, thickness: 1)),
+                      context.rs(10).hSpace,
                       MyText(
                         text: "OR",
                         size: 16,
                         color: kFontText,
                         weight: FontWeight.w500,
                       ),
-                      Gap(10),
-                      Expanded(
-                          child: Divider(color: kFontText, thickness: 1)),
+                      context.rs(10).hSpace,
+                      Expanded(child: Divider(color: kFontText, thickness: 1)),
                     ],
                   ),
 
-                  Gap(20),
+                  context.rs(compact ? 12 : 16).vSpace,
 
                   /// ================= GOOGLE SIGN IN =================
-                  Obx(() => MyButton(
-                    onTap: () async {
-                      if (c.isLoading.value) return;
-
-                      final ok = await c.googleLogin();
-                      if (ok) {
-                        Get.offAll(() => BottomNavBar());
-                      }
-                    },
-                    radius: 12,
-                    backgroundColor: kWhite,
-                    outlineColor: kBorderColor3,
-                    fontColor: kFontText,
-                    buttonText: c.isLoading.value
-                        ? "Please wait..."
-                        : "Continue with Google",
-                    hasgrad: true,
-                  )),
-
-                  Gap(12),
-
-                  /// ================= APPLE SIGN IN =================
-                  if (GetPlatform.isIOS)
-                    Obx(() => MyButton(
+                  Obx(
+                    () => MyButton(
                       onTap: () async {
                         if (c.isLoading.value) return;
 
-                        final ok = await c.appleLogin();
+                        final ok = await c.googleLogin();
                         if (ok) {
                           Get.offAll(() => BottomNavBar());
                         }
@@ -236,33 +227,41 @@ class _LoginScreenState extends State<LoginScreen> {
                       backgroundColor: kWhite,
                       outlineColor: kBorderColor3,
                       fontColor: kFontText,
-                      buttonText: c.isLoading.value
-                          ? "Please wait..."
-                          : "Continue with Apple",
+                      buttonText:
+                          c.isLoading.value
+                              ? "Please wait..."
+                              : "Continue with Google",
                       hasgrad: true,
-                    )),
-
-                  Gap(12),
-
-                  /// ================= GUEST =================
-                  MyButton(
-                    onTap: () async {
-                      if (c.isLoading.value) return;
-
-                      final ok = await c.guestLogin();
-                      if (ok) {
-                        Get.offAll(() => BottomNavBar());
-                      }
-                    },
-                    radius: 12,
-                    backgroundColor: kWhite,
-                    outlineColor: kBorderColor3,
-                    fontColor: kFontText,
-                    buttonText: "Continue as Guest",
-                    hasgrad: true,
+                    ),
                   ),
 
-                  Gap(28),
+                  if (GetPlatform.isIOS) context.rs(10).vSpace,
+
+                  /// ================= APPLE SIGN IN =================
+                  if (GetPlatform.isIOS)
+                    Obx(
+                      () => MyButton(
+                        onTap: () async {
+                          if (c.isLoading.value) return;
+
+                          final ok = await c.appleLogin();
+                          if (ok) {
+                            Get.offAll(() => BottomNavBar());
+                          }
+                        },
+                        radius: 12,
+                        backgroundColor: kWhite,
+                        outlineColor: kBorderColor3,
+                        fontColor: kFontText,
+                        buttonText:
+                            c.isLoading.value
+                                ? "Please wait..."
+                                : "Continue with Apple",
+                        hasgrad: true,
+                      ),
+                    ),
+
+                  context.rs(compact ? 16 : 22).vSpace,
 
                   /// ================= SIGN UP =================
                   Row(
@@ -274,7 +273,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         color: kFontText7,
                         weight: FontWeight.w500,
                       ),
-                      Gap(6),
+                      context.rs(6).hSpace,
                       Bounce(
                         onTap: () {
                           Get.to(() => SignUpScreen());

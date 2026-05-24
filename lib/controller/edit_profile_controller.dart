@@ -31,8 +31,6 @@ class EditProfileController extends GetxController {
     super.onClose();
   }
 
-  // ================= LOAD USER =================
-
   Future<void> loadUserData() async {
     try {
       isLoading.value = true;
@@ -40,7 +38,7 @@ class EditProfileController extends GetxController {
       final user = _auth.currentUser;
       if (user == null) return;
 
-      _originalEmail = user.email ?? "";
+      _originalEmail = (user.email ?? "").trim();
       emailC.text = _originalEmail;
 
       final doc = await _db.collection("users").doc(user.uid).get();
@@ -48,6 +46,10 @@ class EditProfileController extends GetxController {
 
       if (data != null) {
         fullNameC.text = (data["fullName"] ?? data["name"] ?? "").toString();
+        final pendingEmail = (data["pendingEmail"] ?? "").toString().trim();
+        if (pendingEmail.isNotEmpty) {
+          emailC.text = pendingEmail;
+        }
       }
     } catch (e) {
       Get.snackbar("Error", e.toString());
@@ -56,13 +58,11 @@ class EditProfileController extends GetxController {
     }
   }
 
-  // ================= SAVE PROFILE =================
-
-  Future<void> saveProfile() async {
+  Future<bool> saveProfile() async {
     final user = _auth.currentUser;
     if (user == null) {
       Get.snackbar("Error", "User not logged in.");
-      return;
+      return false;
     }
 
     final name = fullNameC.text.trim();
@@ -70,45 +70,65 @@ class EditProfileController extends GetxController {
 
     if (name.isEmpty) {
       Get.snackbar("Error", "Full name is required.");
-      return;
+      return false;
     }
     if (email.isEmpty) {
       Get.snackbar("Error", "Email is required.");
-      return;
+      return false;
     }
 
     try {
       isSaving.value = true;
+      final emailChanged = email != _originalEmail && email.isNotEmpty;
 
-      // ✅ If email changed, in Firebase Auth v6 you use verifyBeforeUpdateEmail
-      // This sends a verification email and updates after verification.
-      if (email != _originalEmail && email.isNotEmpty) {
+      if (emailChanged) {
         await user.verifyBeforeUpdateEmail(email);
-        // NOTE: email changes after user verifies the email from inbox.
-        // We'll still store requested email in Firestore for now.
       }
 
-      // ✅ Update Firestore profile
-      await _db.collection("users").doc(user.uid).set({
+      final data = <String, dynamic>{
         "fullName": name,
-        "email": email,
+        "email": emailChanged ? _originalEmail : email,
         "updatedAt": FieldValue.serverTimestamp(),
-      }, SetOptions(merge: true));
+      };
 
-      Get.snackbar("Success",
-          email != _originalEmail
-              ? "Profile saved. Please verify email from inbox to update login email."
-              : "Profile updated successfully.");
+      if (emailChanged) {
+        data["pendingEmail"] = email;
+        data["emailChangeRequestedAt"] = FieldValue.serverTimestamp();
+      } else {
+        data["pendingEmail"] = FieldValue.delete();
+        data["emailChangeRequestedAt"] = FieldValue.delete();
+      }
 
-      Get.back(result: true);
+      await _db
+          .collection("users")
+          .doc(user.uid)
+          .set(data, SetOptions(merge: true));
+
+      Get.snackbar(
+        "Success",
+        emailChanged
+            ? "Verification link sent to your new email. Please verify it to complete email change."
+            : "Profile updated successfully.",
+      );
+
+      return true;
+    } on FirebaseAuthException catch (e) {
+      if (e.code == "requires-recent-login") {
+        Get.snackbar(
+          "Login Required",
+          "Please log in again before changing your email.",
+        );
+      } else {
+        Get.snackbar("Error", e.message ?? e.code);
+      }
+      return false;
     } catch (e) {
       Get.snackbar("Error", e.toString());
+      return false;
     } finally {
       isSaving.value = false;
     }
   }
-
-  // ================= PASSWORD =================
 
   Future<void> changePassword() async {
     final user = _auth.currentUser;
@@ -130,8 +150,16 @@ class EditProfileController extends GetxController {
 
       newPasswordC.clear();
       Get.snackbar("Success", "Password updated successfully.");
-    } catch (e) {
-      // Usually requires re-login
+    } on FirebaseAuthException catch (e) {
+      if (e.code == "requires-recent-login") {
+        Get.snackbar(
+          "Login Required",
+          "Please log in again before changing your password.",
+        );
+      } else {
+        Get.snackbar("Error", e.message ?? e.code);
+      }
+    } catch (_) {
       Get.snackbar("Error", "Re-login required to change password.");
     } finally {
       isSaving.value = false;

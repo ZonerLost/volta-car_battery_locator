@@ -1,7 +1,7 @@
 // ignore_for_file: prefer_single_quotes
 class Assets {
   Assets._();
-  
+
   /// Assets for fontsInter18ptBlack
   /// assets/fonts/Inter_18pt-Black.ttf
   static const String fontsInter18ptBlack = "assets/fonts/Inter_18pt-Black.ttf";
@@ -12,11 +12,13 @@ class Assets {
 
   /// Assets for fontsInter18ptExtraBold
   /// assets/fonts/Inter_18pt-ExtraBold.ttf
-  static const String fontsInter18ptExtraBold = "assets/fonts/Inter_18pt-ExtraBold.ttf";
+  static const String fontsInter18ptExtraBold =
+      "assets/fonts/Inter_18pt-ExtraBold.ttf";
 
   /// Assets for fontsInter18ptExtraLight
   /// assets/fonts/Inter_18pt-ExtraLight.ttf
-  static const String fontsInter18ptExtraLight = "assets/fonts/Inter_18pt-ExtraLight.ttf";
+  static const String fontsInter18ptExtraLight =
+      "assets/fonts/Inter_18pt-ExtraLight.ttf";
 
   /// Assets for fontsInter18ptLight
   /// assets/fonts/Inter_18pt-Light.ttf
@@ -24,15 +26,18 @@ class Assets {
 
   /// Assets for fontsInter18ptMedium
   /// assets/fonts/Inter_18pt-Medium.ttf
-  static const String fontsInter18ptMedium = "assets/fonts/Inter_18pt-Medium.ttf";
+  static const String fontsInter18ptMedium =
+      "assets/fonts/Inter_18pt-Medium.ttf";
 
   /// Assets for fontsInter18ptRegular
   /// assets/fonts/Inter_18pt-Regular.ttf
-  static const String fontsInter18ptRegular = "assets/fonts/Inter_18pt-Regular.ttf";
+  static const String fontsInter18ptRegular =
+      "assets/fonts/Inter_18pt-Regular.ttf";
 
   /// Assets for fontsInter18ptSemiBold
   /// assets/fonts/Inter_18pt-SemiBold.ttf
-  static const String fontsInter18ptSemiBold = "assets/fonts/Inter_18pt-SemiBold.ttf";
+  static const String fontsInter18ptSemiBold =
+      "assets/fonts/Inter_18pt-SemiBold.ttf";
 
   /// Assets for fontsInter18ptThin
   /// assets/fonts/Inter_18pt-Thin.ttf
@@ -48,11 +53,13 @@ class Assets {
 
   /// Assets for fontsInter24ptExtraBold
   /// assets/fonts/Inter_24pt-ExtraBold.ttf
-  static const String fontsInter24ptExtraBold = "assets/fonts/Inter_24pt-ExtraBold.ttf";
+  static const String fontsInter24ptExtraBold =
+      "assets/fonts/Inter_24pt-ExtraBold.ttf";
 
   /// Assets for fontsInter24ptExtraLight
   /// assets/fonts/Inter_24pt-ExtraLight.ttf
-  static const String fontsInter24ptExtraLight = "assets/fonts/Inter_24pt-ExtraLight.ttf";
+  static const String fontsInter24ptExtraLight =
+      "assets/fonts/Inter_24pt-ExtraLight.ttf";
 
   /// Assets for fontsInter24ptLight
   /// assets/fonts/Inter_24pt-Light.ttf
@@ -60,15 +67,18 @@ class Assets {
 
   /// Assets for fontsInter24ptMedium
   /// assets/fonts/Inter_24pt-Medium.ttf
-  static const String fontsInter24ptMedium = "assets/fonts/Inter_24pt-Medium.ttf";
+  static const String fontsInter24ptMedium =
+      "assets/fonts/Inter_24pt-Medium.ttf";
 
   /// Assets for fontsInter24ptRegular
   /// assets/fonts/Inter_24pt-Regular.ttf
-  static const String fontsInter24ptRegular = "assets/fonts/Inter_24pt-Regular.ttf";
+  static const String fontsInter24ptRegular =
+      "assets/fonts/Inter_24pt-Regular.ttf";
 
   /// Assets for fontsInter24ptSemiBold
   /// assets/fonts/Inter_24pt-SemiBold.ttf
-  static const String fontsInter24ptSemiBold = "assets/fonts/Inter_24pt-SemiBold.ttf";
+  static const String fontsInter24ptSemiBold =
+      "assets/fonts/Inter_24pt-SemiBold.ttf";
 
   /// Assets for fontsInter24ptThin
   /// assets/fonts/Inter_24pt-Thin.ttf
@@ -84,11 +94,13 @@ class Assets {
 
   /// Assets for fontsInter28ptExtraBold
   /// assets/fonts/Inter_28pt-ExtraBold.ttf
-  static const String fontsInter28ptExtraBold = "assets/fonts/Inter_28pt-ExtraBold.ttf";
+  static const String fontsInter28ptExtraBold =
+      "assets/fonts/Inter_28pt-ExtraBold.ttf";
 
   /// Assets for fontsInter28ptExtraLight
   /// assets/fonts/Inter_28pt-ExtraLight.ttf
-  static const String fontsInter28ptExtraLight = "assets/fonts/Inter_28pt-ExtraLight.ttf";
+  static const String fontsInter28ptExtraLight =
+      "assets/fonts/Inter_28pt-ExtraLight.ttf";
 
   /// Assets for fontsInter28ptLight
   /// assets/fonts/Inter_28pt-Light.ttf
@@ -96,15 +108,18 @@ class Assets {
 
   /// Assets for fontsInter28ptMedium
   /// assets/fonts/Inter_28pt-Medium.ttf
-  static const String fontsInter28ptMedium = "assets/fonts/Inter_28pt-Medium.ttf";
+  static const String fontsInter28ptMedium =
+      "assets/fonts/Inter_28pt-Medium.ttf";
 
   /// Assets for fontsInter28ptRegular
   /// assets/fonts/Inter_28pt-Regular.ttf
-  static const String fontsInter28ptRegular = "assets/fonts/Inter_28pt-Regular.ttf";
+  static const String fontsInter28ptRegular =
+      "assets/fonts/Inter_28pt-Regular.ttf";
 
   /// Assets for fontsInter28ptSemiBold
   /// assets/fonts/Inter_28pt-SemiBold.ttf
-  static const String fontsInter28ptSemiBold = "assets/fonts/Inter_28pt-SemiBold.ttf";
+  static const String fontsInter28ptSemiBold =
+      "assets/fonts/Inter_28pt-SemiBold.ttf";
 
   /// Assets for fontsInter28ptThin
   /// assets/fonts/Inter_28pt-Thin.ttf
@@ -116,15 +131,18 @@ class Assets {
 
   /// Assets for imagesBackArrowAppbar
   /// assets/images/back_arrow_appbar.png
-  static const String imagesBackArrowAppbar = "assets/images/back_arrow_appbar.png";
+  static const String imagesBackArrowAppbar =
+      "assets/images/back_arrow_appbar.png";
 
   /// Assets for imagesBackArrowWhite
   /// assets/images/back_arrow_white.png
-  static const String imagesBackArrowWhite = "assets/images/back_arrow_white.png";
+  static const String imagesBackArrowWhite =
+      "assets/images/back_arrow_white.png";
 
   /// Assets for imagesBatteryCharging
   /// assets/images/battery-charging.png
-  static const String imagesBatteryCharging = "assets/images/battery-charging.png";
+  static const String imagesBatteryCharging =
+      "assets/images/battery-charging.png";
 
   /// Assets for imagesBellRing
   /// assets/images/bell-ring.png
@@ -180,7 +198,8 @@ class Assets {
 
   /// Assets for imagesForgotpasswordPhoto
   /// assets/images/forgotpassword_photo.png
-  static const String imagesForgotpasswordPhoto = "assets/images/forgotpassword_photo.png";
+  static const String imagesForgotpasswordPhoto =
+      "assets/images/forgotpassword_photo.png";
 
   /// Assets for imagesGoogle
   /// assets/images/google.png
@@ -207,8 +226,8 @@ class Assets {
   static const String imagesLogo = "assets/images/logo.png";
 
   /// Assets for imagesLogoNew
-  /// assets/images/logo_new.png
-  static const String imagesLogoNew = "assets/images/logo1.jpeg";
+  /// assets/images/logo_car_battery_mark.png
+  static const String imagesLogoNew = "assets/images/logo_car_battery_mark.png";
 
   /// Assets for imagesLogout
   /// assets/images/logout.png
@@ -244,11 +263,13 @@ class Assets {
 
   /// Assets for imagesReportCarImage
   /// assets/images/report_car_image.png
-  static const String imagesReportCarImage = "assets/images/report_car_image.png";
+  static const String imagesReportCarImage =
+      "assets/images/report_car_image.png";
 
   /// Assets for imagesReportInactive
   /// assets/images/report_inactive.png
-  static const String imagesReportInactive = "assets/images/report_inactive.png";
+  static const String imagesReportInactive =
+      "assets/images/report_inactive.png";
 
   /// Assets for imagesRepportActive
   /// assets/images/repport_active.png
@@ -256,11 +277,18 @@ class Assets {
 
   /// Assets for imagesSearchInactive
   /// assets/images/search_inactive.png
-  static const String imagesSearchInactive = "assets/images/search_inactive.png";
+  static const String imagesSearchInactive =
+      "assets/images/search_inactive.png";
 
   /// Assets for imagesSearchesActive
   /// assets/images/searches_active.png
-  static const String imagesSearchesActive = "assets/images/searches_active.png";
+  static const String imagesSearchesActive =
+      "assets/images/searches_active.png";
+
+  /// Assets for imagesSplashVoltBackground
+  /// assets/images/splash_volt_background.png
+  static const String imagesSplashVoltBackground =
+      "assets/images/splash_volt_background.png";
 
   /// Assets for imagesSettingActive
   /// assets/images/setting_active.png
@@ -268,7 +296,8 @@ class Assets {
 
   /// Assets for imagesSettingInactive
   /// assets/images/setting_inactive.png
-  static const String imagesSettingInactive = "assets/images/setting_inactive.png";
+  static const String imagesSettingInactive =
+      "assets/images/setting_inactive.png";
 
   /// Assets for imagesSupport
   /// assets/images/support.png
@@ -298,4 +327,3 @@ class Assets {
   /// assets/images/upload.png
   static const String imagesUpload = "assets/images/upload.png";
 }
-

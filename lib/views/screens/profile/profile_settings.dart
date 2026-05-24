@@ -195,11 +195,21 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                 _divider(),
 
                 _buildSettingTile(
+                  icon: Assets.imagesSupport,
+                  title: "Support & Info",
+                  subtitle: "Get help or report urgent issues.",
+                  onTap: () => Get.to(() => const HelpCenterScreen()),
+                ),
+
+                _divider(),
+
+                _buildSettingTile(
                   icon: Assets.imagesLogout,
                   title: isGuest ? "Exit Guest" : "Logout",
-                  subtitle: isGuest
-                      ? "Return to login screen."
-                      : "Sign out of your account.",
+                  subtitle:
+                      isGuest
+                          ? "Return to login screen."
+                          : "Sign out of your account.",
                   onTap: () {
                     DialogHelper.LogoutDialog(
                       context,
@@ -208,15 +218,6 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                       },
                     );
                   },
-                ),
-
-                _divider(),
-
-                _buildSettingTile(
-                  icon: Assets.imagesSupport,
-                  title: "Support & Info",
-                  subtitle: "Get help or report urgent issues.",
-                  onTap: () => Get.to(() => const HelpCenterScreen()),
                 ),
               ],
             ),

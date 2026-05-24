@@ -70,7 +70,10 @@ class LoginController extends GetxController {
     try {
       isLoading.value = true;
       await _repo.forgotPassword(email);
-      Get.snackbar("Success", "Password reset email sent.");
+      Get.snackbar(
+        "Email Sent",
+        "Volt sent a password reset link to $email. Please check your inbox or spam folder.",
+      );
     } catch (e) {
       Get.snackbar("Reset Failed", e.toString());
     } finally {

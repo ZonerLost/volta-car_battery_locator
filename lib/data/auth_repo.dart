@@ -5,10 +5,16 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:crypto/crypto.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 class AuthRepo {
+  static const _googleWebClientId =
+      "33594735082-2afpfnnkllodv6sd7h5vlt2o8gelraj7.apps.googleusercontent.com";
+  static const _googleIosClientId =
+      "33594735082-fhi79t8d4cehck930gp6ii7togamf2hg.apps.googleusercontent.com";
+
   final FirebaseAuth _auth;
   final FirebaseFirestore _db;
 
@@ -72,8 +78,8 @@ class AuthRepo {
   Future<void> forgotPassword(String email) async {
     try {
       await _auth.sendPasswordResetEmail(email: email);
-    } on FirebaseAuthException catch (e) {
-      throw Exception(e.message ?? "Reset failed");
+    } on FirebaseAuthException {
+      rethrow;
     }
   }
 
@@ -99,17 +105,23 @@ class AuthRepo {
   // GOOGLE SIGN IN
   // =========================
   Future<UserCredential> signInWithGoogle() async {
-    late final UserCredential userCred;
+    if (kIsWeb) {
+      throw Exception("Google sign-in is not configured for web.");
+    }
 
-    if (!kIsWeb && defaultTargetPlatform == TargetPlatform.iOS) {
-      final provider =
-          GoogleAuthProvider()
-            ..addScope('email')
-            ..setCustomParameters({'prompt': 'select_account'});
+    try {
+      final googleSignIn = GoogleSignIn(
+        clientId:
+            defaultTargetPlatform == TargetPlatform.iOS
+                ? _googleIosClientId
+                : null,
+        serverClientId: _googleWebClientId,
+        scopes: const ["email", "profile"],
+      );
 
-      userCred = await _auth.signInWithProvider(provider);
-    } else {
-      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+      await googleSignIn.signOut();
+
+      final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
       if (googleUser == null) {
         throw Exception("Google sign-in cancelled");
       }
@@ -117,16 +129,55 @@ class AuthRepo {
       final GoogleSignInAuthentication googleAuth =
           await googleUser.authentication;
 
+      if (googleAuth.idToken == null && googleAuth.accessToken == null) {
+        throw Exception("Google did not return a valid sign-in token.");
+      }
+
       final credential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,
       );
 
-      userCred = await _auth.signInWithCredential(credential);
+      final userCred = await _auth.signInWithCredential(credential);
+      await _ensureUserDoc(userCred.user);
+      return userCred;
+    } on FirebaseAuthException catch (e) {
+      debugPrint(
+        "GOOGLE FIREBASE AUTH ERROR => code=${e.code}, message=${e.message}",
+      );
+      throw Exception(e.message ?? "Google sign-in failed");
+    } on PlatformException catch (e) {
+      debugPrint(
+        "GOOGLE PLATFORM ERROR => code=${e.code}, message=${e.message}, details=${e.details}",
+      );
+      throw Exception(_friendlyGooglePlatformMsg(e));
+    } catch (e) {
+      debugPrint("GOOGLE SIGN-IN ERROR => $e");
+      throw Exception("Google sign-in failed: $e");
+    }
+  }
+
+  String _friendlyGooglePlatformMsg(PlatformException e) {
+    final raw = [
+      e.code,
+      e.message,
+      e.details?.toString(),
+    ].whereType<String>().join(" ").toLowerCase();
+
+    if (raw.contains("10") || raw.contains("developer_error")) {
+      return "Google sign-in is not configured correctly. Please check Firebase SHA-1/SHA-256 and download a fresh google-services.json.";
+    }
+    if (raw.contains("12500") || raw.contains("sign_in_failed")) {
+      return "Google sign-in failed. Check that the Google provider is enabled in Firebase and OAuth consent/app configuration is complete.";
+    }
+    if (raw.contains("7") || raw.contains("network")) {
+      return "Network issue while signing in with Google. Please check your internet and try again.";
+    }
+    if (raw.contains("canceled") || raw.contains("cancelled")) {
+      return "Google sign-in was cancelled.";
     }
 
-    await _ensureUserDoc(userCred.user);
-    return userCred;
+    return e.message ?? "Google sign-in failed. Please try again.";
   }
 
   // =========================

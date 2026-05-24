@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:fire_fighter/constants/app_colors.dart';
+import 'package:fire_fighter/constants/extensions.dart';
 import 'package:fire_fighter/views/widget/custom_animated_column.dart';
 import 'package:fire_fighter/views/widget/my_text_widget.dart';
 
@@ -40,7 +41,6 @@ class MyTextField extends StatefulWidget {
     this.onChanged,
 
     this.isObSecure = false, // existing
-
     /// ✅ NEW
     this.obscureText,
 
@@ -112,7 +112,7 @@ class _MyTextFieldState extends State<MyTextField> {
         ),
       ],
       child: Padding(
-        padding: EdgeInsets.only(bottom: widget.marginBottom ?? 0),
+        padding: EdgeInsets.only(bottom: context.rs(widget.marginBottom ?? 0)),
         child: AnimatedColumn(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -125,14 +125,19 @@ class _MyTextFieldState extends State<MyTextField> {
                 weight: widget.labelWeight ?? FontWeight.w500,
               ),
             Container(
-              width: widget.Width ?? double.infinity,
+              width:
+                  widget.Width == null
+                      ? double.infinity
+                      : context.rs(widget.Width!),
               decoration: BoxDecoration(
                 color: kWhite,
                 border: Border.all(
                   color: widget.borderColor ?? kBorderColor3,
                   width: 1,
                 ),
-                borderRadius: BorderRadius.circular(widget.radius ?? 12),
+                borderRadius: BorderRadius.circular(
+                  context.rs(widget.radius ?? 12),
+                ),
               ),
               child: TextFormField(
                 validator: widget.validator,
@@ -148,27 +153,29 @@ class _MyTextFieldState extends State<MyTextField> {
                 textInputAction: TextInputAction.done,
                 obscureText: secure, // ✅ FIX
                 obscuringCharacter: '*',
-                style: const TextStyle(
-                  fontSize: 14,
+                style: TextStyle(
+                  fontSize: context.rs(14, min: 12),
                   fontWeight: FontWeight.w300,
                   decoration: TextDecoration.none,
                   color: kBlack,
                 ),
                 decoration: InputDecoration(
                   filled: true,
-                  fillColor: _isFocused
-                      ? widget.focusedFillColor ?? kTransperentColor
-                      : widget.filledColor ?? kTransperentColor,
+                  fillColor:
+                      _isFocused
+                          ? widget.focusedFillColor ?? kTransperentColor
+                          : widget.filledColor ?? kTransperentColor,
                   focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(widget.radius ?? 12),
+                    borderRadius: BorderRadius.circular(
+                      context.rs(widget.radius ?? 12),
+                    ),
                     borderSide: const BorderSide(color: kBorderColor, width: 1),
                   ),
                   enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(widget.radius ?? 12),
-                    borderSide: const BorderSide(
-                      color: kBorderColor,
-                      width: 1,
+                    borderRadius: BorderRadius.circular(
+                      context.rs(widget.radius ?? 12),
                     ),
+                    borderSide: const BorderSide(color: kBorderColor, width: 1),
                   ),
                   prefixIcon: widget.prefix,
                   prefixIconConstraints: const BoxConstraints.tightFor(),
@@ -178,22 +185,26 @@ class _MyTextFieldState extends State<MyTextField> {
                     child: widget.suffix,
                   ),
                   contentPadding: EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: (widget.maxLines ?? 1) > 1 ? 15 : 0,
+                    horizontal: context.rs(16),
+                    vertical: (widget.maxLines ?? 1) > 1 ? context.rs(15) : 0,
                   ),
                   hintText: widget.hint,
                   hintStyle: TextStyle(
-                    fontSize: widget.hintsize ?? 16,
+                    fontSize: context.rs(widget.hintsize ?? 16, min: 12),
                     letterSpacing: 0.5,
                     color: widget.hintColor ?? kSubText,
                     fontWeight: widget.hintWeight ?? FontWeight.w400,
                   ),
                   errorBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(widget.radius ?? 8),
+                    borderRadius: BorderRadius.circular(
+                      context.rs(widget.radius ?? 8),
+                    ),
                     borderSide: const BorderSide(width: 1, color: Colors.red),
                   ),
                   focusedErrorBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(widget.radius ?? 8),
+                    borderRadius: BorderRadius.circular(
+                      context.rs(widget.radius ?? 8),
+                    ),
                     borderSide: const BorderSide(width: 1, color: Colors.red),
                   ),
                 ),

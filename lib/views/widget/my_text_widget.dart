@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:simple_gradient_text/simple_gradient_text.dart';
 import 'package:fire_fighter/constants/app_colors.dart';
+import 'package:fire_fighter/constants/extensions.dart';
 import 'package:fire_fighter/constants/app_fonts.dart';
 
 // ignore: must_be_immutable
@@ -59,17 +60,17 @@ class MyText extends StatelessWidget {
       effects: const [FadeEffect(duration: Duration(milliseconds: 500))],
       child: Padding(
         padding: EdgeInsets.only(
-          top: paddingTop!,
-          left: paddingLeft!,
-          right: paddingRight!,
-          bottom: paddingBottom!,
+          top: context.rs(paddingTop!),
+          left: context.rs(paddingLeft!),
+          right: context.rs(paddingRight!),
+          bottom: context.rs(paddingBottom!),
         ),
         child: GestureDetector(
           onTap: onTap,
           child: Text(
             text,
             style: TextStyle(
-              fontSize: size,
+              fontSize: size == null ? null : context.rs(size!, min: 11),
               color: color ?? kBlack,
               fontWeight: weight,
               decoration: decoration,
@@ -153,7 +154,7 @@ class MyGradeintText extends StatelessWidget {
           foreground: paint,
 
           shadows: shadow,
-          fontSize: size ?? 14,
+          fontSize: context.rs(size ?? 14, min: 11),
           color: color ?? kBlack,
           fontWeight: weight,
           decoration: decoration,

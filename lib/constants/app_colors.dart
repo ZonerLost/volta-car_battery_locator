@@ -26,7 +26,7 @@ const kSecondaryGreyColor3 = Color(0xFFDDDEE4);
 final kOverLay = Color(0x80000000);
 final KSectionBg = Color(0xFF2F2F2F);
 
-const kbackground = Color(0xFFF5F5F5);
+const kbackground = kWhite;
 
 const kSubText = Color(0xFF848E99);
 

@@ -39,7 +39,7 @@ class ForgotPasswordController extends GetxController {
 
       Get.snackbar(
         "Email Sent",
-        "We sent a reset link to $email. Check Inbox & Spam.",
+        "Volt sent a password reset link to $email. Please check your inbox or spam folder.",
         snackPosition: SnackPosition.BOTTOM,
         duration: Duration(seconds: 4),
       );

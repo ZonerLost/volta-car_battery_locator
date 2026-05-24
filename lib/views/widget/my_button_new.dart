@@ -3,6 +3,7 @@ import 'package:bounce/bounce.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:fire_fighter/constants/app_colors.dart';
+import 'package:fire_fighter/constants/extensions.dart';
 import 'package:fire_fighter/views/widget/common_image_view_widget.dart';
 import 'package:fire_fighter/views/widget/custom_animated_row.dart';
 import 'package:fire_fighter/views/widget/my_text_widget.dart';
@@ -59,12 +60,12 @@ class MyButton extends StatelessWidget {
         onTap: onTap,
         child: Container(
           margin: EdgeInsets.only(
-            top: mTop,
-            bottom: mBottom,
-            left: mhoriz,
-            right: mhoriz,
+            top: context.rs(mTop),
+            bottom: context.rs(mBottom),
+            left: context.rs(mhoriz),
+            right: context.rs(mhoriz),
           ),
-          height: height,
+          height: height == null ? null : context.rs(height!, min: 44),
           width: width,
           decoration: BoxDecoration(
             color:
@@ -73,7 +74,7 @@ class MyButton extends StatelessWidget {
                     : backgroundColor ??
                         const Color(0xff0E1A34).withOpacity(0.35),
 
-            borderRadius: BorderRadius.circular(radius),
+            borderRadius: BorderRadius.circular(context.rs(radius)),
             border: Border.all(color: outlineColor),
           ),
           child: Material(
@@ -87,7 +88,10 @@ class MyButton extends StatelessWidget {
                         isleft
                             ? const EdgeInsets.only(left: 20.0)
                             : const EdgeInsets.only(right: 0),
-                    child: CommonImageView(imagePath: choiceIcon, height: 20),
+                    child: CommonImageView(
+                      imagePath: choiceIcon,
+                      height: context.rs(20),
+                    ),
                   ),
                 MyText(
                   paddingLeft: hasicon ? 10 : 0,
@@ -167,12 +171,12 @@ class MyBorderButton extends StatelessWidget {
         onTap: onTap,
         child: Container(
           margin: EdgeInsets.only(
-            top: mTop,
-            bottom: mBottom,
-            left: mhoriz,
-            right: mhoriz,
+            top: context.rs(mTop),
+            bottom: context.rs(mBottom),
+            left: context.rs(mhoriz),
+            right: context.rs(mhoriz),
           ),
-          height: height,
+          height: height == null ? null : context.rs(height!, min: 44),
           width: width,
           decoration: BoxDecoration(
             color:
@@ -181,7 +185,7 @@ class MyBorderButton extends StatelessWidget {
                     : backgroundColor ??
                         const Color(0xff0E1A34).withOpacity(0.35),
             border: Border.all(color: outlineColor ?? kBorderColor3),
-            borderRadius: BorderRadius.circular(radius),
+            borderRadius: BorderRadius.circular(context.rs(radius)),
           ),
           child: Material(
             color: Colors.transparent,
@@ -194,7 +198,10 @@ class MyBorderButton extends StatelessWidget {
                         isleft
                             ? const EdgeInsets.only(left: 0)
                             : const EdgeInsets.only(right: 0),
-                    child: CommonImageView(imagePath: choiceIcon, height: 34),
+                    child: CommonImageView(
+                      imagePath: choiceIcon,
+                      height: context.rs(34),
+                    ),
                   ),
                 MyText(
                   paddingLeft: hasicon ? 0 : 0,

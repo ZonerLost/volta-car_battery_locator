@@ -1,13 +1,12 @@
 // ignore_for_file: prefer_const_constructors
 
-import 'package:fire_fighter/views/screens/auth/otp.dart';
 import 'package:bounce/bounce.dart';
 import 'package:fire_fighter/views/screens/auth/waiver_detail.dart';
 import 'package:fire_fighter/views/widget/custom_checkbox_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 import 'package:fire_fighter/constants/app_colors.dart';
+import 'package:fire_fighter/constants/extensions.dart';
 import 'package:fire_fighter/generated/assets.dart';
 import 'package:fire_fighter/views/screens/auth/login.dart';
 import 'package:fire_fighter/views/widget/common_image_view_widget.dart';
@@ -36,6 +35,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final compact = context.screenHeight < 720;
+    final horizontalPadding = context.rs(compact ? 22 : 28, min: 20);
+    final heroHeight = context.hp(compact ? 14 : 18).clamp(96, 150).toDouble();
+
     return GestureDetector(
       onTap: () {
         if (_focusNodeEmail.hasFocus ||
@@ -50,24 +53,26 @@ class _SignUpScreenState extends State<SignUpScreen> {
       },
       child: Scaffold(
         body: AnimatedListView(
-          padding: EdgeInsets.all(0),
+          padding: EdgeInsets.zero,
           children: [
             Stack(
               children: [
                 CommonImageView(
                   imagePath: Assets.imagesLoginPhoto,
-                  width: Get.width,
+                  width: context.screenWidth,
+                  height: heroHeight,
+                  fit: BoxFit.cover,
                 ),
                 Positioned(
-                  top: 40,
-                  left: 30,
+                  top: context.rs(34, min: 28),
+                  left: context.rs(22, min: 18),
                   child: Bounce(
                     onTap: () {
                       Get.back();
                     },
                     child: CommonImageView(
                       imagePath: Assets.imagesBackArrowWhite,
-                      height: 34,
+                      height: context.rs(32, min: 28),
                     ),
                   ),
                 ),
@@ -75,7 +80,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
             ),
             Container(
               color: kbackground,
-              padding: const EdgeInsets.all(32),
+              padding: EdgeInsets.fromLTRB(
+                horizontalPadding,
+                context.rs(compact ? 16 : 22, min: 14),
+                horizontalPadding,
+                context.rs(18, min: 14),
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -84,16 +94,17 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     children: [
                       MyText(
                         text: "Create Your Account",
-                        size: 24,
+                        size: compact ? 22 : 24,
                         color: kFontText,
                         weight: FontWeight.w700,
                       ),
                     ],
                   ),
                   MyText(
-                    text: "Join the community keeping data accurate and reliable.",
-                    size: 20,
-                    paddingBottom: 32,
+                    text:
+                        "Join the community keeping data accurate and reliable.",
+                    size: compact ? 16 : 18,
+                    paddingBottom: compact ? 14 : 20,
                     color: kFontText7,
                     weight: FontWeight.w600,
                   ),
@@ -104,7 +115,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       MyText(
                         text: "Full Name",
                         size: 16,
-                        paddingBottom: 12,
+                        paddingBottom: 8,
                         color: kFontText,
                         weight: FontWeight.w700,
                       ),
@@ -114,7 +125,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         hintsize: 14,
                         hintColor: kFontText5,
                         hintWeight: FontWeight.w600,
-                        marginBottom: 12,
+                        marginBottom: compact ? 8 : 10,
                         prefix: Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: CommonImageView(
@@ -129,7 +140,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       MyText(
                         text: "Email Address",
                         size: 16,
-                        paddingBottom: 12,
+                        paddingBottom: 8,
                         color: kFontText,
                         weight: FontWeight.w700,
                       ),
@@ -139,7 +150,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         hintsize: 14,
                         hintColor: kFontText5,
                         hintWeight: FontWeight.w600,
-                        marginBottom: 12,
+                        marginBottom: compact ? 8 : 10,
                         prefix: Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: CommonImageView(
@@ -166,97 +177,105 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           ),
                         ],
                       ),
-                      Gap(12),
+                      context.rs(compact ? 8 : 10).vSpace,
 
                       // ✅ password with toggle (UI same)
-                      Obx(() => MyTextField(
-                        controller: c.passwordC, // ✅
-                        hint: "Enter your password",
-                        hintsize: 14,
-                        hintWeight: FontWeight.w600,
-                        hintColor: kFontText5,
-                        marginBottom: 12,
-                        focusNode: _focusNodePassword,
-                        obscureText: c.obscurePass.value, // ✅
-                        prefix: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: CommonImageView(
-                            imagePath: Assets.imagesLock,
-                            height: 24,
+                      Obx(
+                        () => MyTextField(
+                          controller: c.passwordC, // ✅
+                          hint: "Enter your password",
+                          hintsize: 14,
+                          hintWeight: FontWeight.w600,
+                          hintColor: kFontText5,
+                          marginBottom: compact ? 8 : 10,
+                          focusNode: _focusNodePassword,
+                          obscureText: c.obscurePass.value, // ✅
+                          prefix: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: CommonImageView(
+                              imagePath: Assets.imagesLock,
+                              height: 24,
+                            ),
+                          ),
+                          suffix: Bounce(
+                            onTap: () {
+                              c.obscurePass.value = !c.obscurePass.value;
+                            },
+                            child: CommonImageView(
+                              imagePath: Assets.imagesEye,
+                              height: 24,
+                            ),
                           ),
                         ),
-                        suffix: Bounce(
-                          onTap: () {
-                            c.obscurePass.value = !c.obscurePass.value;
-                          },
-                          child: CommonImageView(
-                            imagePath: Assets.imagesEye,
-                            height: 24,
-                          ),
-                        ),
-                      )),
+                      ),
 
                       // ✅ confirm password (same styling)
-                      Obx(() => MyTextField(
-                        controller: c.confirmPasswordC, // ✅
-                        hint: "Confirm your password",
-                        hintsize: 14,
-                        hintWeight: FontWeight.w600,
-                        hintColor: kFontText5,
-                        marginBottom: 0,
-                        focusNode: _focusNodeConfrimPassword,
-                        obscureText: c.obscureConfirm.value, // ✅
-                        prefix: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: CommonImageView(
-                            imagePath: Assets.imagesLock,
-                            height: 24,
+                      Obx(
+                        () => MyTextField(
+                          controller: c.confirmPasswordC, // ✅
+                          hint: "Confirm your password",
+                          hintsize: 14,
+                          hintWeight: FontWeight.w600,
+                          hintColor: kFontText5,
+                          marginBottom: 0,
+                          focusNode: _focusNodeConfrimPassword,
+                          obscureText: c.obscureConfirm.value, // ✅
+                          prefix: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: CommonImageView(
+                              imagePath: Assets.imagesLock,
+                              height: 24,
+                            ),
+                          ),
+                          suffix: Bounce(
+                            onTap: () {
+                              c.obscureConfirm.value = !c.obscureConfirm.value;
+                            },
+                            child: CommonImageView(
+                              imagePath: Assets.imagesEye,
+                              height: 24,
+                            ),
                           ),
                         ),
-                        suffix: Bounce(
-                          onTap: () {
-                            c.obscureConfirm.value =
-                            !c.obscureConfirm.value;
-                          },
-                          child: CommonImageView(
-                            imagePath: Assets.imagesEye,
-                            height: 24,
-                          ),
-                        ),
-                      )),
+                      ),
                     ],
                   ),
 
-                  Gap(12),
+                  context.rs(compact ? 8 : 10).vSpace,
 
                   // ✅ checkbox bind
-                  Obx(() => CustomCheckbox(
-                    text:
-                    "I have read and agree to your Terms &\nConditions & Privacy Policies.",
-                    value: c.agreed.value, // ✅ add in widget
-                    onChanged: (bool value) {
-                      c.agreed.value = value;
-                    },
-                  )),
+                  Obx(
+                    () => CustomCheckbox(
+                      text:
+                          "I have read and agree to the Terms & Conditions and Privacy Policy.",
+                      value: c.agreed.value, // ✅ add in widget
+                      onChanged: (bool value) {
+                        c.agreed.value = value;
+                      },
+                    ),
+                  ),
 
-                  Gap(60),
+                  context.rs(compact ? 18 : 26).vSpace,
 
-                  Obx(() => MyButton(
-                    onTap: c.isLoading.value
-                        ? () {}
-                        : () async {
-                      final ok = await c.signUp();
-                      if (ok) {
-                        Get.offAll(() => WavierDetailScreen());
-                      }
-                    },
-                    radius: 12,
-                    buttonText:
-                    c.isLoading.value ? "Please wait..." : "Sign Up",
-                    hasgrad: true,
-                  )),
+                  Obx(
+                    () => MyButton(
+                      onTap:
+                          c.isLoading.value
+                              ? () {}
+                              : () async {
+                                final ok = await c.signUp();
+                                if (ok) {
+                                  Get.offAll(() => WavierDetailScreen());
+                                }
+                              },
+                      radius: 12,
+                      buttonText:
+                          c.isLoading.value ? "Please wait..." : "Sign Up",
+                      hasgrad: true,
+                    ),
+                  ),
 
-                  Gap(28),
+                  context.rs(compact ? 16 : 22).vSpace,
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -266,7 +285,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         color: kFontText7,
                         weight: FontWeight.w500,
                       ),
-                      Gap(6),
+                      context.rs(6).hSpace,
                       Bounce(
                         onTap: () {
                           Get.to(() => LoginScreen());

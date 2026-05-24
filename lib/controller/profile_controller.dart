@@ -35,8 +35,8 @@ class ProfileSettingsController extends GetxController {
         return;
       }
 
-      // fallback from auth
-      email.value = (u.email ?? "").trim();
+      final authEmail = (u.email ?? "").trim();
+      email.value = authEmail;
 
       // fetch from firestore users/{uid}
       final doc = await _db.collection("users").doc(u.uid).get();
@@ -45,7 +45,18 @@ class ProfileSettingsController extends GetxController {
       if (d != null) {
         fullName.value =
             (d["fullName"] ?? d["name"] ?? d["username"] ?? "User").toString();
-        email.value = (d["email"] ?? email.value).toString();
+        final storedEmail = (d["email"] ?? "").toString().trim();
+        if (authEmail.isNotEmpty && storedEmail != authEmail) {
+          email.value = authEmail;
+          await _db.collection("users").doc(u.uid).set({
+            "email": authEmail,
+            "pendingEmail": FieldValue.delete(),
+            "emailChangeRequestedAt": FieldValue.delete(),
+            "updatedAt": FieldValue.serverTimestamp(),
+          }, SetOptions(merge: true));
+        } else {
+          email.value = storedEmail.isEmpty ? email.value : storedEmail;
+        }
         photoUrl.value = (d["photoUrl"] ?? d["avatarUrl"] ?? "").toString();
       }
     } catch (_) {

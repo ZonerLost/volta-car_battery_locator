@@ -1,19 +1,14 @@
-// ignore_for_file: prefer_const_constructors
-
-import 'package:bounce/bounce.dart';
-import 'package:fire_fighter/views/screens/dialogs/dialogs.dart';
+import 'package:fire_fighter/constants/app_colors.dart';
+import 'package:fire_fighter/constants/extensions.dart';
+import 'package:fire_fighter/controller/missing_car_controller.dart';
+import 'package:fire_fighter/views/screens/report_module/report_form_widgets.dart';
+import 'package:fire_fighter/views/widget/custom_animated_column.dart';
 import 'package:fire_fighter/views/widget/my_button_new.dart';
 import 'package:fire_fighter/views/widget/my_text_widget.dart';
 import 'package:fire_fighter/views/widget/my_textfeild.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
-import 'package:fire_fighter/constants/app_colors.dart';
-import 'package:fire_fighter/generated/assets.dart';
-import 'package:fire_fighter/views/widget/common_image_view_widget.dart';
-import 'package:fire_fighter/views/widget/custom_animated_column.dart';
 import 'package:get/get.dart';
-
-import '../../../controller/missing_car_controller.dart';
 
 class MissingCarScreen extends StatefulWidget {
   const MissingCarScreen({super.key});
@@ -36,176 +31,141 @@ class _MissingCarScreenState extends State<MissingCarScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      bottomNavigationBar: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(24.0),
-            child: Obx(() => MyButton(
+      backgroundColor: kbackground,
+      resizeToAvoidBottomInset: false,
+      bottomNavigationBar: SafeArea(
+        top: false,
+        child: Padding(
+          padding: EdgeInsets.fromLTRB(
+            context.rs(22, min: 18, max: 28),
+            context.rs(10, min: 8, max: 12),
+            context.rs(22, min: 18, max: 28),
+            context.rs(16, min: 12, max: 20),
+          ),
+          child: Obx(
+            () => MyButton(
               onTap: () async {
                 if (c.isSubmitting.value) return;
                 await c.submit();
-
-                // ✅ if you still want dialog after success, show it AFTER submit:
-                // DialogHelper.FeedbackSentDialog(context);
               },
-              radius: 12,
+              radius: 16,
               buttonText:
-              c.isSubmitting.value ? "Submitting..." : "Submit Feedback",
+                  c.isSubmitting.value ? "Submitting..." : "Submit Feedback",
               hasgrad: true,
-            )),
+            ),
           ),
-          Gap(30),
-        ],
+        ),
       ),
-      body: AnimatedListView(
-        padding: EdgeInsets.all(24),
-        children: [
-          Gap(50),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.start,
+      body: SafeArea(
+        child: Padding(
+          padding: EdgeInsets.fromLTRB(
+            context.rs(22, min: 18, max: 28),
+            context.rs(12, min: 10, max: 16),
+            context.rs(22, min: 18, max: 28),
+            context.rs(8, min: 6, max: 10),
+          ),
+          child: Column(
             children: [
-              Bounce(
-                onTap: () => Get.back(),
-                child: CommonImageView(
-                  imagePath: Assets.imagesBackArrowAppbar,
-                  height: 32,
+              const Row(children: [ReportBackButton()]),
+              Gap(context.rs(10, min: 8, max: 12)),
+              const ReportHeaderCard(
+                title: "Missing Car",
+                subtitle: "Not seeing your car? Submit details to add it.",
+                icon: Icons.directions_car_filled_rounded,
+              ),
+              Gap(context.rs(10, min: 8, max: 12)),
+              Expanded(
+                child: ReportFormCard(
+                  children: [
+                    Obx(() {
+                      if (c.error.value.isEmpty) return const SizedBox.shrink();
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 8),
+                        child: MyText(
+                          text: c.error.value,
+                          size: 12,
+                          color: Colors.red,
+                          maxLines: 2,
+                          textOverflow: TextOverflow.ellipsis,
+                          weight: FontWeight.w700,
+                        ),
+                      );
+                    }),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: _compactField(
+                            label: "Make",
+                            required: true,
+                            controller: c.makeC,
+                            hint: "Make",
+                            icon: Icons.local_offer_rounded,
+                          ),
+                        ),
+                        Gap(context.rs(10, min: 8, max: 12)),
+                        Expanded(
+                          child: _compactField(
+                            label: "Model",
+                            required: true,
+                            controller: c.modelC,
+                            hint: "Model",
+                            icon: Icons.car_repair_rounded,
+                          ),
+                        ),
+                      ],
+                    ),
+                    _compactField(
+                      label: "Year",
+                      required: true,
+                      controller: c.yearC,
+                      hint: "Enter year",
+                      icon: Icons.calendar_month_rounded,
+                      keyboardType: TextInputType.number,
+                    ),
+                    _compactField(
+                      label: "Message",
+                      controller: c.messageC,
+                      hint: "Optional message",
+                      icon: Icons.notes_rounded,
+                      maxLines: 3,
+                      marginBottom: 0,
+                    ),
+                  ],
                 ),
               ),
             ],
           ),
-          Padding(
-            padding: const EdgeInsets.all(10),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                MyText(
-                  text: "Missing Car",
-                  size: 24,
-                  color: kFontText,
-                  weight: FontWeight.w700,
-                ),
-                MyText(
-                  text: "Not seeing your car? Submit details to add it.",
-                  size: 20,
-                  paddingBottom: 18,
-                  color: kFontText7,
-                  weight: FontWeight.w600,
-                ),
-
-                // ✅ error
-                Obx(() {
-                  if (c.error.value.isEmpty) return SizedBox.shrink();
-                  return Padding(
-                    padding: const EdgeInsets.only(bottom: 10),
-                    child: MyText(
-                      text: c.error.value,
-                      size: 14,
-                      color: Colors.red,
-                      weight: FontWeight.w600,
-                    ),
-                  );
-                }),
-
-                _buildLabel("Make", isRequired: true),
-                MyTextField(
-                  controller: c.makeC,
-                  hint: "Enter Car Make (e.g. Honda)",
-                  hintsize: 14,
-                  hintColor: kFontText5,
-                  hintWeight: FontWeight.w600,
-                  marginBottom: 12,
-                  prefix: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: CommonImageView(
-                      imagePath: Assets.imagesCarTaxiFront,
-                      height: 24,
-                    ),
-                  ),
-                  borderColor: kBorderColor3,
-                ),
-
-                _buildLabel("Model", isRequired: true),
-                MyTextField(
-                  controller: c.modelC,
-                  hint: "Enter Car Model (e.g. Civic)",
-                  hintsize: 14,
-                  hintColor: kFontText5,
-                  hintWeight: FontWeight.w600,
-                  marginBottom: 12,
-                  prefix: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: CommonImageView(
-                      imagePath: Assets.imagesCar,
-                      height: 24,
-                    ),
-                  ),
-                  borderColor: kBorderColor3,
-                ),
-
-                _buildLabel("Year", isRequired: true),
-                MyTextField(
-                  controller: c.yearC,
-                  hint: "Enter Year (e.g. 2015)",
-                  hintsize: 14,
-                  hintColor: kFontText5,
-                  hintWeight: FontWeight.w600,
-                  marginBottom: 12,
-                  prefix: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: CommonImageView(
-                      imagePath: Assets.imagesCalendar2,
-                      height: 24,
-                    ),
-                  ),
-                  borderColor: kBorderColor3,
-                  keyboardType: TextInputType.number,
-                ),
-
-                _buildLabel("Message"),
-                MyTextField(
-                  controller: c.messageC,
-                  hint: "Write your message here (optional)",
-                  hintsize: 14,
-                  hintColor: kFontText5,
-                  hintWeight: FontWeight.w600,
-                  marginBottom: 12,
-                  prefix: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: CommonImageView(
-                      imagePath: Assets.imagesTarget,
-                      height: 24,
-                    ),
-                  ),
-                  borderColor: kBorderColor3,
-                  maxLines: 3,
-                ),
-              ],
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }
 
-  Widget _buildLabel(String label, {bool isRequired = false}) {
-    return Row(
+  Widget _compactField({
+    required String label,
+    required TextEditingController controller,
+    required String hint,
+    required IconData icon,
+    bool required = false,
+    int maxLines = 1,
+    double marginBottom = 8,
+    TextInputType? keyboardType,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        MyText(
-          text: label,
-          size: 20,
-          paddingBottom: 12,
-          color: kFontText,
-          weight: FontWeight.w600,
+        reportLabel(label, isRequired: required),
+        MyTextField(
+          controller: controller,
+          hint: hint,
+          hintsize: 13,
+          hintColor: kFontText5,
+          hintWeight: FontWeight.w600,
+          marginBottom: marginBottom,
+          prefix: ReportFieldIcon(icon),
+          borderColor: kBorderColor3,
+          keyboardType: keyboardType,
+          maxLines: maxLines,
         ),
-        if (isRequired)
-          MyText(
-            text: "*",
-            size: 20,
-            paddingBottom: 12,
-            color: kPrimaryColor,
-            weight: FontWeight.w600,
-          ),
       ],
     );
   }

@@ -1,9 +1,7 @@
 import 'package:bounce/bounce.dart';
+import 'package:fire_fighter/constants/extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:fire_fighter/constants/app_colors.dart';
-import 'package:fire_fighter/views/widget/custom_animated_row.dart';
-
-import 'my_text_widget.dart';
 
 class CustomCheckbox extends StatefulWidget {
   final String? text;
@@ -11,6 +9,7 @@ class CustomCheckbox extends StatefulWidget {
 
   final Color? textcolor;
   final Function(bool) onChanged;
+  final bool value;
 
   const CustomCheckbox({
     super.key,
@@ -18,7 +17,8 @@ class CustomCheckbox extends StatefulWidget {
     this.text2,
 
     required this.onChanged,
-    this.textcolor, required bool value,
+    this.textcolor,
+    required this.value,
   });
 
   @override
@@ -26,7 +26,21 @@ class CustomCheckbox extends StatefulWidget {
 }
 
 class _CustomCheckboxState extends State<CustomCheckbox> {
-  bool _isChecked = false;
+  late bool _isChecked;
+
+  @override
+  void initState() {
+    super.initState();
+    _isChecked = widget.value;
+  }
+
+  @override
+  void didUpdateWidget(covariant CustomCheckbox oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.value != widget.value) {
+      _isChecked = widget.value;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +51,8 @@ class _CustomCheckboxState extends State<CustomCheckbox> {
         });
         widget.onChanged(_isChecked);
       },
-      child: AnimatedRow(
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
             width: 24,
@@ -57,24 +72,30 @@ class _CustomCheckboxState extends State<CustomCheckbox> {
                     : null,
           ),
           const SizedBox(width: 8),
-          Flexible(
-            child: AnimatedRow(
-              spacing: 4,
-              children: [
-                MyText(
-                  text: widget.text ?? '',
-                  size: 14,
-                  letterSpacing: 0,
-                  color: kFontText7,
-                  weight: FontWeight.w600,
-                ),
-                MyText(
-                  text: widget.text2 ?? '',
-                  size: 14,
-                  letterSpacing: 0,
-                  weight: FontWeight.w700,
-                ),
-              ],
+          Expanded(
+            child: RichText(
+              text: TextSpan(
+                children: [
+                  TextSpan(
+                    text: widget.text ?? '',
+                    style: TextStyle(
+                      color: widget.textcolor ?? kFontText7,
+                      fontSize: context.rs(14, min: 12),
+                      fontWeight: FontWeight.w600,
+                      height: 1.35,
+                    ),
+                  ),
+                  TextSpan(
+                    text: widget.text2 ?? '',
+                    style: TextStyle(
+                      color: kFontText,
+                      fontSize: context.rs(14, min: 12),
+                      fontWeight: FontWeight.w700,
+                      height: 1.35,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ],
@@ -115,7 +136,8 @@ class _CustomCheckbox2State extends State<CustomCheckbox2> {
         });
         widget.onChanged(_isChecked);
       },
-      child: AnimatedRow(
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
             width: 14,
@@ -135,25 +157,30 @@ class _CustomCheckbox2State extends State<CustomCheckbox2> {
                     : null,
           ),
           const SizedBox(width: 8),
-          Flexible(
-            child: AnimatedRow(
-              spacing: 4,
-              children: [
-                MyText(
-                  text: widget.text ?? '',
-                  size: 14,
-                  letterSpacing: 0,
-                  color: kBlack,
-                  weight: FontWeight.w500,
-                ),
-                MyText(
-                  text: widget.text2 ?? '',
-                  size: 14,
-                  letterSpacing: 0,
-
-                  weight: FontWeight.w700,
-                ),
-              ],
+          Expanded(
+            child: RichText(
+              text: TextSpan(
+                children: [
+                  TextSpan(
+                    text: widget.text ?? '',
+                    style: TextStyle(
+                      color: widget.textcolor ?? kBlack,
+                      fontSize: context.rs(14, min: 12),
+                      fontWeight: FontWeight.w500,
+                      height: 1.35,
+                    ),
+                  ),
+                  TextSpan(
+                    text: widget.text2 ?? '',
+                    style: TextStyle(
+                      color: kBlack,
+                      fontSize: context.rs(14, min: 12),
+                      fontWeight: FontWeight.w700,
+                      height: 1.35,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ],

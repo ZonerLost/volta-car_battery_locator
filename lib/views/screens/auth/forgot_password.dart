@@ -2,11 +2,10 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:bounce/bounce.dart';
-import 'package:fire_fighter/views/screens/auth/reset_password.dart';
 import 'package:flutter/material.dart';
-import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 import 'package:fire_fighter/constants/app_colors.dart';
+import 'package:fire_fighter/constants/extensions.dart';
 import 'package:fire_fighter/generated/assets.dart';
 import 'package:fire_fighter/views/screens/auth/login.dart';
 import 'package:fire_fighter/views/widget/common_image_view_widget.dart';
@@ -38,6 +37,10 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final compact = context.screenHeight < 720;
+    final horizontalPadding = context.rs(compact ? 22 : 28, min: 20);
+    final heroHeight = context.hp(compact ? 18 : 22).clamp(118, 180).toDouble();
+
     return GestureDetector(
       onTap: () {
         if (_focusNodeEmail.hasFocus) {
@@ -46,24 +49,26 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       },
       child: Scaffold(
         body: AnimatedListView(
-          padding: EdgeInsets.all(0),
+          padding: EdgeInsets.zero,
           children: [
             Stack(
               children: [
                 CommonImageView(
                   imagePath: Assets.imagesForgotpasswordPhoto,
-                  width: Get.width,
+                  width: context.screenWidth,
+                  height: heroHeight,
+                  fit: BoxFit.cover,
                 ),
                 Positioned(
-                  top: 40,
-                  left: 30,
+                  top: context.rs(34, min: 28),
+                  left: context.rs(22, min: 18),
                   child: Bounce(
                     onTap: () {
                       Get.back();
                     },
                     child: CommonImageView(
                       imagePath: Assets.imagesBackArrowWhite,
-                      height: 34,
+                      height: context.rs(32, min: 28),
                     ),
                   ),
                 ),
@@ -71,7 +76,12 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
             ),
             Container(
               color: kbackground,
-              padding: const EdgeInsets.all(32),
+              padding: EdgeInsets.fromLTRB(
+                horizontalPadding,
+                context.rs(compact ? 18 : 24, min: 16),
+                horizontalPadding,
+                context.rs(18, min: 14),
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -80,7 +90,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     children: [
                       MyText(
                         text: "Forgot Your Password?",
-                        size: 24,
+                        size: compact ? 22 : 24,
                         color: kFontText,
                         weight: FontWeight.w700,
                       ),
@@ -88,9 +98,9 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   ),
                   MyText(
                     text:
-                    "Enter your email, and we’ll send a link to reset your password.",
-                    size: 20,
-                    paddingBottom: 32,
+                        "Enter your email, and we'll send a link to reset your password.",
+                    size: compact ? 16 : 18,
+                    paddingBottom: compact ? 18 : 24,
                     color: kFontText7,
                     weight: FontWeight.w600,
                   ),
@@ -101,17 +111,18 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                       MyText(
                         text: "Email",
                         size: 16,
-                        paddingBottom: 12,
+                        paddingBottom: 8,
                         color: kFontText,
                         weight: FontWeight.w700,
                       ),
                       MyTextField(
-                        controller: c.emailC, // ✅ attach controller (no UI change)
+                        controller:
+                            c.emailC, // ✅ attach controller (no UI change)
                         hint: "e.g. Jandoe@gmail.com",
                         hintsize: 14,
                         hintColor: kFontText5,
                         hintWeight: FontWeight.w600,
-                        marginBottom: 60,
+                        marginBottom: compact ? 18 : 24,
                         prefix: Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: CommonImageView(
@@ -126,34 +137,40 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   ),
 
                   // ✅ Send reset email using Firebase
-                  Obx(() => MyButton(
-                    onTap: c.isLoading.value
-                        ? () {}
-                        : () async {
-                      await c.sendResetLink();
-                      // ✅ No navigation. User will reset via email link.
-                    },
-                    radius: 12,
-                    buttonText: c.isLoading.value ? "Please wait..." : "Send Reset Link",
-                    hasgrad: true,
-                  )),
+                  Obx(
+                    () => MyButton(
+                      onTap:
+                          c.isLoading.value
+                              ? () {}
+                              : () async {
+                                await c.sendResetLink();
+                                // ✅ No navigation. User will reset via email link.
+                              },
+                      radius: 12,
+                      buttonText:
+                          c.isLoading.value
+                              ? "Please wait..."
+                              : "Send Reset Link",
+                      hasgrad: true,
+                    ),
+                  ),
 
-                  Gap(20),
+                  context.rs(compact ? 12 : 16).vSpace,
                   Row(
                     children: [
                       Expanded(child: Divider(color: kFontText, thickness: 1)),
-                      Gap(10),
+                      context.rs(10).hSpace,
                       MyText(
                         text: "OR",
                         size: 16,
                         color: kFontText,
                         weight: FontWeight.w500,
                       ),
-                      Gap(10),
+                      context.rs(10).hSpace,
                       Expanded(child: Divider(color: kFontText, thickness: 1)),
                     ],
                   ),
-                  Gap(20),
+                  context.rs(compact ? 12 : 16).vSpace,
                   MyButton(
                     onTap: () {
                       Get.off(() => LoginScreen());
@@ -165,7 +182,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     buttonText: "Back to Log In",
                     hasgrad: true,
                   ),
-                  Gap(28),
+                  context.rs(compact ? 16 : 22).vSpace,
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [

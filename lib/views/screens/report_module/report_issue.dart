@@ -1,274 +1,237 @@
-// // ignore_for_file: prefer_const_constructors
-// import 'package:bounce/bounce.dart';
-// import 'package:fire_fighter/views/screens/report_module/general_feedback.dart';
-// import 'package:fire_fighter/views/screens/report_module/missing_car.dart';
-// import 'package:fire_fighter/views/screens/report_module/wrong_location.dart';
-// import 'package:fire_fighter/views/widget/my_text_widget.dart';
-// import 'package:flutter/material.dart';
-// import 'package:gap/gap.dart';
-// import 'package:fire_fighter/constants/app_colors.dart';
-// import 'package:fire_fighter/generated/assets.dart';
-// import 'package:fire_fighter/views/widget/common_image_view_widget.dart';
-// import 'package:fire_fighter/views/widget/custom_animated_column.dart';
-// import 'package:get/get.dart';
-
-// class ReportIssueScreen extends StatefulWidget {
-//   const ReportIssueScreen({super.key});
-
-//   @override
-//   State<ReportIssueScreen> createState() => _ReportIssueScreenState();
-// }
-
-// class _ReportIssueScreenState extends State<ReportIssueScreen> {
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       body: AnimatedListView(
-//         padding: EdgeInsets.all(24),
-//         children: [
-//           Gap(50),
-//           Row(
-//             mainAxisAlignment: MainAxisAlignment.start,
-//             crossAxisAlignment: CrossAxisAlignment.start,
-//             children: [
-//               Bounce(
-//                 onTap: () {
-//                   Get.back();
-//                 },
-//                 child: CommonImageView(
-//                   imagePath: Assets.imagesBackArrowAppbar,
-//                   height: 32,
-//                 ),
-//               ),
-//             ],
-//           ),
-//           Gap(16),
-//           MyText(
-//             text: "Report an Issue",
-//             size: 24,
-//             color: kFontText,
-//             weight: FontWeight.w700,
-//           ),
-//           MyText(
-//             text: "Choose the type of report below and share details with us.",
-//             size: 20,
-//             paddingBottom: 32,
-//             color: kFontText7,
-//             weight: FontWeight.w600,
-//           ),
-//           Gap(20),
-
-//           ListView.builder(
-//             shrinkWrap: true,
-//             padding: EdgeInsets.all(0),
-//             physics: NeverScrollableScrollPhysics(),
-//             itemCount: 3, // Matches the number of items in the image
-//             itemBuilder: (context, index) {
-//               final searches = [
-//                 {
-//                   "model": "Wrong Location",
-//                   "location": "Tell us where the battery icon should be.",
-//                   "image": Assets.imagesReportCarImage,
-//                   "onTap": () {
-//                     Get.to(() => WrongLocationScreen());
-//                   },
-//                 },
-//                 {
-//                   "model": "Missing Car",
-//                   "location": "Not seeing your car? Submit details to add it.",
-//                   "image": Assets.imagesReportCarImage,
-//                   "onTap": () {
-//                     Get.to(() => MissingCarScreen());
-//                   },
-//                 },
-//                 {
-//                   "model": "General Feedback",
-//                   "location":
-//                       "Have another issue or suggestion? Share your feedback with our team.",
-//                   "image": Assets.imagesReportCarImage,
-//                   "onTap": () {
-//                     Get.to(() => GeneralFeedbackScreen());
-//                   },
-//                 },
-//               ];
-//               final search = searches[index];
-
-//               return Column(
-//                 children: [
-//                   Bounce(
-//                     onTap: () {
-//                       search["onTap"];
-//                     },
-//                     child: Container(
-//                       padding: EdgeInsets.all(8),
-//                       margin: EdgeInsets.only(bottom: 12),
-//                       decoration: BoxDecoration(
-//                         color: kWhite,
-//                         borderRadius: BorderRadius.circular(10),
-//                         border: Border.all(color: kBorderColor3),
-//                       ),
-//                       child: Column(
-//                         crossAxisAlignment: CrossAxisAlignment.start,
-//                         children: [
-//                           Row(
-//                             children: [
-//                               CommonImageView(
-//                                 imagePath: search["image"]!, // Assert non-null
-//                                 height: 130,
-//                               ),
-//                             ],
-//                           ),
-//                           Gap(6),
-//                           MyText(
-//                             text: search["model"]!,
-//                             size: 16,
-//                             color: kFontText,
-//                             weight: FontWeight.w700,
-//                           ),
-//                           MyText(
-//                             text: "Tell us where the battery icon should be.",
-//                             size: 14,
-//                             color: kFontText,
-//                             weight: FontWeight.w600,
-//                           ),
-//                         ],
-//                       ),
-//                     ),
-//                   ),
-//                 ],
-//               );
-//             },
-//           ),
-
-//           Gap(20),
-//         ],
-//       ),
-//     );
-//   }
-// }
-
-// ignore_for_file: prefer_const_constructors
-
 import 'package:bounce/bounce.dart';
+import 'package:fire_fighter/constants/app_colors.dart';
+import 'package:fire_fighter/constants/extensions.dart';
 import 'package:fire_fighter/views/screens/report_module/general_feedback.dart';
 import 'package:fire_fighter/views/screens/report_module/missing_car.dart';
 import 'package:fire_fighter/views/screens/report_module/wrong_location.dart';
-import 'package:fire_fighter/views/widget/custom_animated_column.dart';
 import 'package:fire_fighter/views/widget/my_text_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
-import 'package:fire_fighter/constants/app_colors.dart';
-import 'package:fire_fighter/generated/assets.dart';
-import 'package:fire_fighter/views/widget/common_image_view_widget.dart';
 import 'package:get/get.dart';
 
-class ReportIssueScreen extends StatefulWidget {
+class ReportIssueScreen extends StatelessWidget {
   const ReportIssueScreen({super.key});
 
   @override
-  State<ReportIssueScreen> createState() => _ReportIssueScreenState();
-}
-
-class _ReportIssueScreenState extends State<ReportIssueScreen> {
-  @override
   Widget build(BuildContext context) {
-    final List<Map<String, dynamic>> reports = [
-      {
-        "title": "Wrong Location",
-        "subtitle": "Tell us where the battery icon should be.",
-        "image": Assets.imagesReportCarImage,
-        "onTap": () => Get.to(() => const WrongLocationScreen()),
-      },
-      {
-        "title": "Missing Car",
-        "subtitle": "Not seeing your car? Submit details to add it.",
-        "image": Assets.imagesReportCarImage,
-        "onTap": () => Get.to(() => const MissingCarScreen()),
-      },
-      {
-        "title": "General Feedback",
-        "subtitle":
-            "Have another issue or suggestion? Share your feedback with our team.",
-        "image": Assets.imagesReportCarImage,
-        "onTap": () => Get.to(() => const GeneralFeedbackScreen()),
-      },
+    final reports = [
+      _ReportOption(
+        title: "Wrong Location",
+        subtitle: "Battery marker is showing in the wrong place.",
+        icon: Icons.location_off_rounded,
+        color: kPrimaryColor,
+        onTap: () => Get.to(() => const WrongLocationScreen()),
+      ),
+      _ReportOption(
+        title: "Missing Car",
+        subtitle: "Your vehicle is not available in the locator.",
+        icon: Icons.directions_car_filled_rounded,
+        color: kSecondaryColor,
+        onTap: () => Get.to(() => const MissingCarScreen()),
+      ),
+      _ReportOption(
+        title: "General Feedback",
+        subtitle: "Share another issue, suggestion, or app feedback.",
+        icon: Icons.chat_bubble_rounded,
+        color: kSecondaryGreenColor,
+        onTap: () => Get.to(() => const GeneralFeedbackScreen()),
+      ),
     ];
 
     return Scaffold(
-      body: AnimatedListView(
-        padding: EdgeInsets.all(24),
-        children: [
-          Gap(50),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.start,
+      backgroundColor: kbackground,
+      body: SafeArea(
+        child: Padding(
+          padding: EdgeInsets.fromLTRB(
+            context.rs(22, min: 18, max: 28),
+            context.rs(18, min: 14, max: 24),
+            context.rs(22, min: 18, max: 28),
+            context.rs(20, min: 16, max: 26),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Bounce(
-                onTap: () => Get.back(),
-                child: CommonImageView(
-                  imagePath: Assets.imagesBackArrowAppbar,
-                  height: 32,
+              Container(
+                width: double.infinity,
+                padding: EdgeInsets.all(context.rs(20, min: 18, max: 26)),
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    colors: [kPrimaryColor, kPrimaryColor2],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  borderRadius: BorderRadius.circular(
+                    context.rs(26, min: 22, max: 30),
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: kPrimaryColor.withOpacity(0.22),
+                      blurRadius: 28,
+                      offset: const Offset(0, 14),
+                    ),
+                  ],
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          MyText(
+                            text: "Report an Issue",
+                            size: 26,
+                            color: kWhite,
+                            weight: FontWeight.w800,
+                          ),
+                          MyText(
+                            text: "Choose what went wrong so we can fix it.",
+                            size: 15,
+                            paddingTop: 8,
+                            color: kWhite.withOpacity(0.88),
+                            weight: FontWeight.w600,
+                          ),
+                        ],
+                      ),
+                    ),
+                    Gap(context.rs(12, min: 10, max: 16)),
+                    Container(
+                      height: context.rs(68, min: 60, max: 78),
+                      width: context.rs(68, min: 60, max: 78),
+                      decoration: BoxDecoration(
+                        color: kWhite.withOpacity(0.16),
+                        borderRadius: BorderRadius.circular(22),
+                        border: Border.all(color: kWhite.withOpacity(0.22)),
+                      ),
+                      child: Icon(
+                        Icons.report_problem_rounded,
+                        color: kWhite,
+                        size: context.rs(34, min: 30, max: 38),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Gap(context.rs(22, min: 18, max: 28)),
+              MyText(
+                text: "Report Type",
+                size: 19,
+                color: kFontText,
+                weight: FontWeight.w800,
+              ),
+              MyText(
+                text: "Select the closest option below.",
+                size: 14,
+                paddingTop: 4,
+                paddingBottom: 14,
+                color: kFontText6,
+                weight: FontWeight.w600,
+              ),
+              Expanded(
+                child: ListView.separated(
+                  physics: const BouncingScrollPhysics(),
+                  itemCount: reports.length,
+                  separatorBuilder:
+                      (_, __) => Gap(context.rs(12, min: 10, max: 14)),
+                  itemBuilder: (context, index) => reports[index],
                 ),
               ),
             ],
           ),
-          Gap(16),
-          MyText(
-            text: "Report an Issue",
-            size: 24,
-            color: kFontText,
-            weight: FontWeight.w700,
-          ),
-          MyText(
-            text: "Choose the type of report below and share details with us.",
-            size: 20,
-            paddingBottom: 32,
-            color: kFontText7,
-            weight: FontWeight.w600,
-          ),
+        ),
+      ),
+    );
+  }
+}
 
-          // Report list
-          ListView.builder(
-            shrinkWrap: true,
-            padding: EdgeInsets.zero,
-            physics: NeverScrollableScrollPhysics(),
-            itemCount: reports.length,
-            itemBuilder: (context, index) {
-              final report = reports[index];
-              return Bounce(
-                onTap: report["onTap"],
-                child: Container(
-                  padding: EdgeInsets.all(12),
-                  margin: EdgeInsets.only(bottom: 16),
-                  decoration: BoxDecoration(
-                    color: kWhite,
-                    borderRadius: BorderRadius.circular(10),
-                    border: Border.all(color: kBorderColor3),
+class _ReportOption extends StatelessWidget {
+  const _ReportOption({
+    required this.title,
+    required this.subtitle,
+    required this.icon,
+    required this.color,
+    required this.onTap,
+  });
+
+  final String title;
+  final String subtitle;
+  final IconData icon;
+  final Color color;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Bounce(
+      onTap: onTap,
+      child: Container(
+        width: double.infinity,
+        padding: EdgeInsets.all(context.rs(16, min: 14, max: 18)),
+        decoration: BoxDecoration(
+          color: kWhite,
+          borderRadius: BorderRadius.circular(context.rs(18, min: 16, max: 22)),
+          border: Border.all(color: kBorderColor),
+          boxShadow: [
+            BoxShadow(
+              color: kFontText.withOpacity(0.07),
+              blurRadius: 20,
+              offset: const Offset(0, 10),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            Container(
+              height: context.rs(50, min: 46, max: 56),
+              width: context.rs(50, min: 46, max: 56),
+              decoration: BoxDecoration(
+                color: color.withOpacity(0.12),
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Icon(
+                icon,
+                color: color,
+                size: context.rs(26, min: 24, max: 30),
+              ),
+            ),
+            Gap(context.rs(14, min: 12, max: 16)),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  MyText(
+                    text: title,
+                    size: 17,
+                    color: kFontText,
+                    weight: FontWeight.w800,
                   ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      CommonImageView(imagePath: report["image"], height: 130),
-                      Gap(8),
-                      MyText(
-                        text: report["title"],
-                        size: 16,
-                        color: kFontText,
-                        weight: FontWeight.w700,
-                      ),
-                      MyText(
-                        text: report["subtitle"],
-                        size: 14,
-                        color: kFontText7,
-                        weight: FontWeight.w500,
-                      ),
-                    ],
+                  MyText(
+                    text: subtitle,
+                    size: 13,
+                    paddingTop: 3,
+                    maxLines: 2,
+                    textOverflow: TextOverflow.ellipsis,
+                    color: kFontText6,
+                    weight: FontWeight.w600,
                   ),
-                ),
-              );
-            },
-          ),
-          Gap(20),
-        ],
+                ],
+              ),
+            ),
+            Gap(context.rs(10, min: 8, max: 12)),
+            Container(
+              height: context.rs(32, min: 30, max: 34),
+              width: context.rs(32, min: 30, max: 34),
+              decoration: BoxDecoration(
+                color: kGreyContainerGreyColor2,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: kBorderColor),
+              ),
+              child: Icon(
+                Icons.arrow_forward_ios_rounded,
+                color: kFontText6,
+                size: context.rs(14, min: 12, max: 15),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
