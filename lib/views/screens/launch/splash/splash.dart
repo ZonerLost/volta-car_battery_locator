@@ -25,6 +25,7 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     final short = context.screenHeight < 700;
+    final topSafe = MediaQuery.paddingOf(context).top;
     final titleSize = context.rs(short ? 46 : 58, min: 38, max: 68);
     final subtitleSize = context.rs(short ? 21 : 25, min: 18, max: 30);
     final taglineSize = context.rs(short ? 20 : 24, min: 16, max: 28);
@@ -35,10 +36,13 @@ class _SplashScreenState extends State<SplashScreen> {
         fit: StackFit.expand,
         children: [
           CommonImageView(
-            imagePath: Assets.imagesSplashVoltBackground,
+            imagePath: Assets.imagesSplashResponderCarBackground,
             width: context.screenWidth,
             height: context.screenHeight,
             fit: BoxFit.cover,
+          ),
+          Positioned.fill(
+            child: Container(color: Colors.black.withOpacity(0.12)),
           ),
           Container(
             decoration: BoxDecoration(
@@ -54,11 +58,29 @@ class _SplashScreenState extends State<SplashScreen> {
               ),
             ),
           ),
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            height: topSafe + context.rs(18, min: 12),
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Colors.black.withOpacity(0.72),
+                    Colors.black.withOpacity(0),
+                  ],
+                ),
+              ),
+            ),
+          ),
           SafeArea(
             child: Padding(
               padding: EdgeInsets.symmetric(
                 horizontal: context.rs(24, min: 18),
-                vertical: context.rs(short ? 22 : 34, min: 18),
+                vertical: context.rs(short ? 28 : 38, min: 22),
               ),
               child: Column(
                 children: [
@@ -90,7 +112,7 @@ class _SplashScreenState extends State<SplashScreen> {
                           ),
                           child: CommonImageView(
                             imagePath: Assets.imagesLogoNew,
-                            width: context.wp(short ? 70 : 76),
+                            width: context.wp(short ? 58 : 64),
                             fit: BoxFit.contain,
                           ),
                         ),
@@ -102,7 +124,7 @@ class _SplashScreenState extends State<SplashScreen> {
                         ),
                         child: CommonImageView(
                           imagePath: Assets.imagesLogoNew,
-                          width: context.wp(short ? 70 : 76),
+                          width: context.wp(short ? 58 : 64),
                           fit: BoxFit.contain,
                         ),
                       ),

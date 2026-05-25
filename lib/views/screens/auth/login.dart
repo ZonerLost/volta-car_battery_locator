@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:fire_fighter/controller/login_controller.dart';
+import 'package:fire_fighter/views/screens/auth/auth_widgets.dart';
 import 'package:fire_fighter/views/screens/auth/forgot_password.dart';
 import 'package:fire_fighter/views/screens/bottom_nav/BottomBarNav.dart';
 import 'package:bounce/bounce.dart';
@@ -13,7 +14,6 @@ import 'package:fire_fighter/views/screens/auth/signup.dart';
 import 'package:fire_fighter/views/widget/common_image_view_widget.dart';
 import 'package:fire_fighter/views/widget/custom_animated_column.dart';
 import 'package:fire_fighter/views/widget/my_button_new.dart';
-import 'package:fire_fighter/views/widget/my_text_widget.dart';
 import 'package:fire_fighter/views/widget/my_textfeild.dart';
 
 import '../../../controller/SessionController.dart';
@@ -33,10 +33,16 @@ class _LoginScreenState extends State<LoginScreen> {
   final LoginController c = Get.put(LoginController());
 
   @override
+  void dispose() {
+    _focusNodeEmail.dispose();
+    _focusNodePassword.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final compact = context.screenHeight < 720;
     final horizontalPadding = context.rs(compact ? 22 : 28, min: 20);
-    final heroHeight = context.hp(compact ? 18 : 22).clamp(118, 180).toDouble();
 
     return GestureDetector(
       onTap: () {
@@ -49,11 +55,10 @@ class _LoginScreenState extends State<LoginScreen> {
         body: AnimatedListView(
           padding: EdgeInsets.zero,
           children: [
-            CommonImageView(
-              imagePath: Assets.imagesLoginPhoto,
-              width: context.screenWidth,
-              height: heroHeight,
-              fit: BoxFit.cover,
+            AuthHero(
+              imagePath: Assets.imagesAuthVoltResponderBackground,
+              title: "Welcome Back",
+              subtitle: "Sign in to find car battery locations faster.",
             ),
             Container(
               color: kbackground,
@@ -66,41 +71,19 @@ class _LoginScreenState extends State<LoginScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  MyText(
-                    text: "Welcome Back",
-                    size: compact ? 22 : 24,
-                    color: kFontText,
-                    weight: FontWeight.w700,
-                  ),
-
-                  MyText(
-                    text: "Log in to continue saving time in the field.",
-                    size: compact ? 16 : 18,
-                    paddingBottom: compact ? 18 : 24,
-                    color: kFontText7,
-                    weight: FontWeight.w600,
-                  ),
-
-                  /// ================= EMAIL =================
-                  MyText(
-                    text: "Email",
-                    size: 16,
-                    paddingBottom: 8,
-                    color: kFontText,
-                    weight: FontWeight.w700,
-                  ),
-
+                  AuthFieldLabel(text: "Email Address"),
                   MyTextField(
                     controller: c.emailC,
-                    hint: "Enter your email",
+                    hint: "name@example.com",
                     hintsize: 14,
                     hintColor: kFontText5,
                     hintWeight: FontWeight.w600,
                     marginBottom: compact ? 8 : 10,
+                    keyboardType: TextInputType.emailAddress,
                     prefix: Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: CommonImageView(
-                        imagePath: Assets.imagesPerson,
+                        imagePath: Assets.imagesEmail,
                         height: 24,
                       ),
                     ),
@@ -108,25 +91,10 @@ class _LoginScreenState extends State<LoginScreen> {
                     focusNode: _focusNodeEmail,
                   ),
 
-                  /// ================= PASSWORD =================
-                  Row(
-                    spacing: 6,
-                    children: [
-                      MyText(
-                        text: "Password",
-                        size: 16,
-                        color: kFontText,
-                        weight: FontWeight.w700,
-                      ),
-                      CommonImageView(
-                        imagePath: Assets.imagesPasswordIcon,
-                        height: 16,
-                      ),
-                    ],
+                  AuthFieldLabel(
+                    text: "Password",
+                    iconPath: Assets.imagesPasswordIcon,
                   ),
-
-                  context.rs(compact ? 8 : 10).vSpace,
-
                   Obx(
                     () => MyTextField(
                       controller: c.passwordC,
@@ -156,24 +124,30 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
 
-                  /// ================= FORGOT PASSWORD =================
                   Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      MyText(
+                      Bounce(
                         onTap: () {
                           Get.to(() => ForgotPasswordScreen());
                         },
-                        text: "Forgot Password?",
-                        size: 16,
-                        paddingBottom: compact ? 16 : 22,
-                        color: kSecondaryColor,
-                        weight: FontWeight.w600,
+                        child: Padding(
+                          padding: EdgeInsets.only(
+                            bottom: context.rs(compact ? 16 : 22),
+                          ),
+                          child: const Text(
+                            "Forgot Password?",
+                            style: TextStyle(
+                              color: kSecondaryColor,
+                              fontSize: 15,
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
+                        ),
                       ),
                     ],
                   ),
 
-                  /// ================= LOGIN BUTTON =================
                   Obx(
                     () => MyButton(
                       onTap:
@@ -187,32 +161,15 @@ class _LoginScreenState extends State<LoginScreen> {
                               },
                       radius: 12,
                       buttonText:
-                          c.isLoading.value ? "Please wait..." : "Login",
+                          c.isLoading.value ? "Please wait..." : "Log In",
                       hasgrad: true,
                     ),
                   ),
 
                   context.rs(compact ? 12 : 16).vSpace,
-
-                  /// ================= OR =================
-                  Row(
-                    children: [
-                      Expanded(child: Divider(color: kFontText, thickness: 1)),
-                      context.rs(10).hSpace,
-                      MyText(
-                        text: "OR",
-                        size: 16,
-                        color: kFontText,
-                        weight: FontWeight.w500,
-                      ),
-                      context.rs(10).hSpace,
-                      Expanded(child: Divider(color: kFontText, thickness: 1)),
-                    ],
-                  ),
-
+                  const AuthDivider(),
                   context.rs(compact ? 12 : 16).vSpace,
 
-                  /// ================= GOOGLE SIGN IN =================
                   Obx(
                     () => MyButton(
                       onTap: () async {
@@ -227,6 +184,8 @@ class _LoginScreenState extends State<LoginScreen> {
                       backgroundColor: kWhite,
                       outlineColor: kBorderColor3,
                       fontColor: kFontText,
+                      hasicon: true,
+                      choiceIcon: Assets.imagesGoogle,
                       buttonText:
                           c.isLoading.value
                               ? "Please wait..."
@@ -263,29 +222,12 @@ class _LoginScreenState extends State<LoginScreen> {
 
                   context.rs(compact ? 16 : 22).vSpace,
 
-                  /// ================= SIGN UP =================
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      MyText(
-                        text: "Don't have an account?",
-                        size: 16,
-                        color: kFontText7,
-                        weight: FontWeight.w500,
-                      ),
-                      context.rs(6).hSpace,
-                      Bounce(
-                        onTap: () {
-                          Get.to(() => SignUpScreen());
-                        },
-                        child: MyText(
-                          text: "Sign Up",
-                          size: 16,
-                          color: kSecondaryColor,
-                          weight: FontWeight.w600,
-                        ),
-                      ),
-                    ],
+                  AuthFooterLink(
+                    text: "Don't have an account?",
+                    actionText: "Sign Up",
+                    onTap: () {
+                      Get.to(() => SignUpScreen());
+                    },
                   ),
                 ],
               ),

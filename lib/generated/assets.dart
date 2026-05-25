@@ -129,6 +129,11 @@ class Assets {
   /// assets/images/arrow-down.png
   static const String imagesArrowDown = "assets/images/arrow-down.png";
 
+  /// Assets for imagesAuthVoltResponderBackground
+  /// assets/images/auth_volt_responder_background.png
+  static const String imagesAuthVoltResponderBackground =
+      "assets/images/auth_volt_responder_background.png";
+
   /// Assets for imagesBackArrowAppbar
   /// assets/images/back_arrow_appbar.png
   static const String imagesBackArrowAppbar =
@@ -289,6 +294,11 @@ class Assets {
   /// assets/images/splash_volt_background.png
   static const String imagesSplashVoltBackground =
       "assets/images/splash_volt_background.png";
+
+  /// Assets for imagesSplashResponderCarBackground
+  /// assets/images/splash_responder_car_background.png
+  static const String imagesSplashResponderCarBackground =
+      "assets/images/splash_responder_car_background.png";
 
   /// Assets for imagesSettingActive
   /// assets/images/setting_active.png
