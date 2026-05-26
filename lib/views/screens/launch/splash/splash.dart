@@ -35,11 +35,13 @@ class _SplashScreenState extends State<SplashScreen> {
       body: Stack(
         fit: StackFit.expand,
         children: [
-          CommonImageView(
-            imagePath: Assets.imagesSplashResponderCarBackground,
+          Image.asset(
+            Assets.imagesSplasyPic,
             width: context.screenWidth,
             height: context.screenHeight,
             fit: BoxFit.cover,
+            alignment: Alignment.center,
+            filterQuality: FilterQuality.high,
           ),
           Positioned.fill(
             child: Container(color: Colors.black.withOpacity(0.12)),

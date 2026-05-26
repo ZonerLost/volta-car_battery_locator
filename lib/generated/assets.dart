@@ -300,6 +300,10 @@ class Assets {
   static const String imagesSplashResponderCarBackground =
       "assets/images/splash_responder_car_background.png";
 
+  /// Assets for imagesSplasyPic
+  /// assets/images/splasy_pic.jpg
+  static const String imagesSplasyPic = "assets/images/splasy_pic.jpg";
+
   /// Assets for imagesSettingActive
   /// assets/images/setting_active.png
   static const String imagesSettingActive = "assets/images/setting_active.png";
