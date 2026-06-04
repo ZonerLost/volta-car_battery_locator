@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:fire_fighter/utils/app_snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -122,10 +123,13 @@ class MissingCarController extends GetxController {
 
       error.value = "";
       Get.back(result: true);
-      Get.snackbar("Report Submitted", "Thanks! Your request has been sent.");
+      AppSnackBar.show(
+        "Report Submitted",
+        "Thanks! Your request has been sent.",
+      );
     } catch (e) {
       error.value = e.toString();
-      Get.snackbar("Error", error.value);
+      AppSnackBar.show("Error", error.value);
     } finally {
       isSubmitting.value = false;
     }

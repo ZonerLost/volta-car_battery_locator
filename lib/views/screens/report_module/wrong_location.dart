@@ -1,8 +1,8 @@
 import 'package:fire_fighter/constants/app_colors.dart';
 import 'package:fire_fighter/constants/extensions.dart';
+import 'package:fire_fighter/controller/home_controller.dart';
 import 'package:fire_fighter/controller/wrong_location_controller.dart';
 import 'package:fire_fighter/views/screens/report_module/report_form_widgets.dart';
-import 'package:fire_fighter/views/widget/custom_animated_column.dart';
 import 'package:fire_fighter/views/widget/my_button_new.dart';
 import 'package:fire_fighter/views/widget/my_text_widget.dart';
 import 'package:fire_fighter/views/widget/my_textfeild.dart';
@@ -40,9 +40,19 @@ class _WrongLocationScreenState extends State<WrongLocationScreen> {
     c.prefill(
       make: widget.make,
       model: widget.model,
-      year: widget.year,
+      year: _initialYear,
       reportedArea: widget.reportedArea,
     );
+  }
+
+  String? get _initialYear {
+    final widgetYear = (widget.year ?? "").trim();
+    if (widgetYear.isNotEmpty) return widgetYear;
+
+    if (!Get.isRegistered<HomeController>()) return null;
+
+    final selectedYear = Get.find<HomeController>().selectedYearLabel.value;
+    return selectedYear.trim().isEmpty ? null : selectedYear.trim();
   }
 
   @override
@@ -57,7 +67,7 @@ class _WrongLocationScreenState extends State<WrongLocationScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: kbackground,
-      resizeToAvoidBottomInset: false,
+      resizeToAvoidBottomInset: true,
       bottomNavigationBar: SafeArea(
         top: false,
         child: Padding(
@@ -100,84 +110,85 @@ class _WrongLocationScreenState extends State<WrongLocationScreen> {
               ),
               Gap(context.rs(10, min: 8, max: 12)),
               Expanded(
-                child: ReportFormCard(
-                  children: [
-                    Obx(() {
-                      if (c.error.value.isEmpty) return const SizedBox.shrink();
-                      return Padding(
-                        padding: const EdgeInsets.only(bottom: 8),
-                        child: MyText(
-                          text: c.error.value,
-                          size: 12,
-                          color: Colors.red,
-                          maxLines: 2,
-                          textOverflow: TextOverflow.ellipsis,
-                          weight: FontWeight.w700,
-                        ),
-                      );
-                    }),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: _compactField(
-                            label: "Make",
-                            required: true,
-                            controller: c.makeC,
-                            hint: "Make",
-                            icon: Icons.local_offer_rounded,
+                child: SingleChildScrollView(
+                  physics: const BouncingScrollPhysics(),
+                  keyboardDismissBehavior:
+                      ScrollViewKeyboardDismissBehavior.onDrag,
+                  child: ReportFormCard(
+                    children: [
+                      Obx(() {
+                        if (c.error.value.isEmpty) {
+                          return const SizedBox.shrink();
+                        }
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 8),
+                          child: MyText(
+                            text: c.error.value,
+                            size: 12,
+                            color: Colors.red,
+                            maxLines: 2,
+                            textOverflow: TextOverflow.ellipsis,
+                            weight: FontWeight.w700,
                           ),
-                        ),
-                        Gap(context.rs(10, min: 8, max: 12)),
-                        Expanded(
-                          child: _compactField(
-                            label: "Model",
-                            required: true,
-                            controller: c.modelC,
-                            hint: "Model",
-                            icon: Icons.car_repair_rounded,
+                        );
+                      }),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: _compactField(
+                              label: "Make",
+                              required: true,
+                              controller: c.makeC,
+                              hint: "Make",
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: _compactField(
-                            label: "Year",
-                            required: true,
-                            controller: c.yearC,
-                            hint: "Year",
-                            icon: Icons.calendar_month_rounded,
-                            keyboardType: TextInputType.number,
+                          Gap(context.rs(10, min: 8, max: 12)),
+                          Expanded(
+                            child: _compactField(
+                              label: "Model",
+                              required: true,
+                              controller: c.modelC,
+                              hint: "Model",
+                            ),
                           ),
-                        ),
-                        Gap(context.rs(10, min: 8, max: 12)),
-                        Expanded(
-                          child: _compactField(
-                            label: "Shown Area",
-                            controller: c.reportedAreaC,
-                            hint: "Current",
-                            icon: Icons.my_location_rounded,
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: _compactField(
+                              label: "Year",
+                              required: true,
+                              controller: c.yearC,
+                              hint: "Year",
+                              keyboardType: TextInputType.number,
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
-                    _compactField(
-                      label: "Correct Area",
-                      required: true,
-                      controller: c.correctAreaC,
-                      hint: "Where should it be?",
-                      icon: Icons.battery_charging_full_rounded,
-                    ),
-                    _compactField(
-                      label: "Message",
-                      controller: c.messageC,
-                      hint: "Optional message",
-                      icon: Icons.notes_rounded,
-                      maxLines: 2,
-                      marginBottom: 0,
-                    ),
-                  ],
+                          Gap(context.rs(10, min: 8, max: 12)),
+                          Expanded(
+                            child: _compactField(
+                              label: "Shown Area",
+                              controller: c.reportedAreaC,
+                              hint: "Current",
+                            ),
+                          ),
+                        ],
+                      ),
+                      _compactField(
+                        label: "Correct Area",
+                        required: true,
+                        controller: c.correctAreaC,
+                        hint: "Where should it be?",
+                      ),
+                      _compactField(
+                        label: "Message",
+                        controller: c.messageC,
+                        hint: "Optional message",
+                        maxLines: 2,
+                        marginBottom: 0,
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ],
@@ -191,11 +202,11 @@ class _WrongLocationScreenState extends State<WrongLocationScreen> {
     required String label,
     required TextEditingController controller,
     required String hint,
-    required IconData icon,
     bool required = false,
     int maxLines = 1,
     double marginBottom = 8,
     TextInputType? keyboardType,
+    bool readOnly = false,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -208,10 +219,12 @@ class _WrongLocationScreenState extends State<WrongLocationScreen> {
           hintColor: kFontText5,
           hintWeight: FontWeight.w600,
           marginBottom: marginBottom,
-          prefix: ReportFieldIcon(icon),
           borderColor: kBorderColor3,
           keyboardType: keyboardType,
           maxLines: maxLines,
+          isReadOnly: readOnly,
+          onChanged: (_) => c.error.value = "",
+          filledColor: readOnly ? kGreyContainerGreyColor2 : null,
         ),
       ],
     );

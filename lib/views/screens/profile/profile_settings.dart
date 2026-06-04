@@ -59,94 +59,106 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
           // ✅ FIXED HEADER: Guest = no Obx, User = Obx
           isGuest
               ? Container(
-            padding:
-            const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
-            decoration: BoxDecoration(
-              color: kWhite,
-              borderRadius: BorderRadius.circular(14),
-              border: Border.all(color: kBorderColor3),
-            ),
-            child: Row(
-              children: [
-                CommonImageView(
-                  imagePath: Assets.imagesProfile,
-                  height: 38,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 18,
                 ),
-                Gap(12),
-                Expanded(
-                  child: MyText(
-                    text: "User",
-                    size: 16,
-                    weight: FontWeight.w600,
-                    color: kFontText,
-                  ),
+                decoration: BoxDecoration(
+                  color: kWhite,
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(color: kBorderColor3),
                 ),
-              ],
-            ),
-          )
-              : Obx(() => Container(
-            padding: const EdgeInsets.symmetric(
-                horizontal: 16, vertical: 18),
-            decoration: BoxDecoration(
-              color: kWhite,
-              borderRadius: BorderRadius.circular(14),
-              border: Border.all(color: kBorderColor3),
-            ),
-            child: Row(
-              children: [
-                CommonImageView(
-                  imagePath: Assets.imagesProfile,
-                  height: 38,
-                ),
-                Gap(12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      MyText(
-                        text: c.isLoading.value
-                            ? "Loading..."
-                            : (c.fullName.value.isEmpty
-                            ? "User"
-                            : c.fullName.value),
+                child: Row(
+                  children: [
+                    CommonImageView(
+                      imagePath: Assets.imagesProfile,
+                      height: 38,
+                    ),
+                    Gap(12),
+                    Expanded(
+                      child: MyText(
+                        text: "User",
                         size: 16,
                         weight: FontWeight.w600,
                         color: kFontText,
                       ),
-                      MyText(
-                        text: c.isLoading.value ? "" : c.email.value,
-                        size: 14,
-                        color: kFontText,
+                    ),
+                  ],
+                ),
+              )
+              : Obx(
+                () => Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 18,
+                  ),
+                  decoration: BoxDecoration(
+                    color: kWhite,
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(color: kBorderColor3),
+                  ),
+                  child: Row(
+                    children: [
+                      CommonImageView(
+                        imagePath: Assets.imagesProfile,
+                        height: 38,
+                      ),
+                      Gap(12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            MyText(
+                              text:
+                                  c.isLoading.value
+                                      ? "Loading..."
+                                      : (c.fullName.value.isEmpty
+                                          ? "User"
+                                          : c.fullName.value),
+                              size: 16,
+                              weight: FontWeight.w600,
+                              color: kFontText,
+                            ),
+                            MyText(
+                              text: c.isLoading.value ? "" : c.email.value,
+                              size: 14,
+                              maxLines: 1,
+                              textOverflow: TextOverflow.ellipsis,
+                              color: kFontText,
+                            ),
+                          ],
+                        ),
+                      ),
+                      Bounce(
+                        onTap: () async {
+                          final res = await Get.to(
+                            () => const EditProfileScreen(),
+                          );
+                          if (res == true) {
+                            await c.refreshProfile();
+                          }
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 6,
+                          ),
+                          decoration: BoxDecoration(
+                            color: kPrimaryColor,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: MyText(
+                            text: "Edit",
+                            size: 12,
+                            color: kWhite,
+                            weight: FontWeight.w600,
+                          ),
+                        ),
                       ),
                     ],
                   ),
                 ),
-                Bounce(
-                  onTap: () async {
-                    final res =
-                    await Get.to(() => const EditProfileScreen());
-                    if (res == true) {
-                      await c.refreshProfile();
-                    }
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 16, vertical: 6),
-                    decoration: BoxDecoration(
-                      color: kPrimaryColor,
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: MyText(
-                      text: "Edit",
-                      size: 12,
-                      color: kWhite,
-                      weight: FontWeight.w600,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          )),
+              ),
 
           Gap(32),
 
@@ -187,7 +199,6 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                       onConfirm: () async {
                         await c.clearCache();
                       },
-
                     );
                   },
                 ),
@@ -209,7 +220,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                   subtitle:
                       isGuest
                           ? "Return to login screen."
-                          : "Sign out of your account.",
+                          : "Log out of your account.",
                   onTap: () {
                     DialogHelper.LogoutDialog(
                       context,

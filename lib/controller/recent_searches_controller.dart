@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:fire_fighter/utils/app_snackbar.dart';
 import 'package:get/get.dart';
 
 import '../model/car_details.dart';
@@ -48,12 +49,17 @@ class RecentSearchesController extends GetxController {
         .orderBy("lastSearchedAt", descending: true)
         .limit(20)
         .snapshots()
-        .listen((snap) {
-      searches.assignAll(snap.docs.map((d) => RecentSearch.fromDoc(d)).toList());
-      isLoading.value = false;
-    }, onError: (_) {
-      isLoading.value = false;
-    });
+        .listen(
+          (snap) {
+            searches.assignAll(
+              snap.docs.map((d) => RecentSearch.fromDoc(d)).toList(),
+            );
+            isLoading.value = false;
+          },
+          onError: (_) {
+            isLoading.value = false;
+          },
+        );
   }
 
   /// ✅ SAVE recent from CarDetails (Locate screen se)
@@ -78,14 +84,14 @@ class RecentSearchesController extends GetxController {
 
       final doc = await carsRef.doc(s.carId).get();
       if (!doc.exists) {
-        Get.snackbar("Recent Search", "This car record no longer exists.");
+        AppSnackBar.show("Recent Search", "This car record no longer exists.");
         return;
       }
 
       // ✅ open locate screen using same flow (carId)
       Get.to(() => LocateBatteryScreen(carId: doc.id));
     } catch (_) {
-      Get.snackbar("Recent Search", "Failed to open this item.");
+      AppSnackBar.show("Recent Search", "Failed to open this item.");
     } finally {
       isLoading.value = false;
     }
@@ -113,12 +119,10 @@ class RecentSearchesController extends GetxController {
         batch.delete(d.reference);
       }
       await batch.commit();
-
     } catch (e) {
-      Get.snackbar("Cache", "Failed to clear recent searches.");
+      AppSnackBar.show("Cache", "Failed to clear recent searches.");
     } finally {
       isLoading.value = false;
     }
   }
-
 }

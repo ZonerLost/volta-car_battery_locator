@@ -6,7 +6,6 @@ import 'package:get/get.dart';
 import 'package:fire_fighter/constants/app_colors.dart';
 import 'package:fire_fighter/constants/app_sizes.dart';
 import 'package:fire_fighter/generated/assets.dart';
-import 'package:fire_fighter/views/screens/auth/login.dart';
 import 'package:fire_fighter/views/widget/common_image_view_widget.dart';
 import 'package:fire_fighter/views/widget/custom_animated_column.dart';
 import 'package:fire_fighter/views/widget/my_button_new.dart';
@@ -210,9 +209,9 @@ class DialogHelper {
   }
 
   static void CacheDialog(
-      BuildContext context, {
-        required Future<void> Function() onConfirm,
-      }) {
+    BuildContext context, {
+    required Future<void> Function() onConfirm,
+  }) {
     Get.dialog(
       AnimatedColumn(
         animationDuration: 200,
@@ -232,10 +231,7 @@ class DialogHelper {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    CommonImageView(
-                      imagePath: Assets.imagesCache,
-                      height: 40,
-                    ),
+                    CommonImageView(imagePath: Assets.imagesCache, height: 40),
                     Bounce(
                       onTap: () => Get.back(),
                       child: CommonImageView(
@@ -254,7 +250,7 @@ class DialogHelper {
                 ),
                 const MyText(
                   text:
-                  "This removes stored searches and diagrams. You can still use the app, but offline access will be unavailable.",
+                      "This removes stored searches and diagrams. You can still use the app, but offline access will be unavailable.",
                   size: 16,
                   color: kFontText7,
                   paddingBottom: 24,
@@ -295,9 +291,9 @@ class DialogHelper {
   }
 
   static void LogoutDialog(
-      BuildContext context, {
-        required Future<void> Function() onConfirm,
-      }) {
+    BuildContext context, {
+    required Future<void> Function() onConfirm,
+  }) {
     Get.dialog(
       AnimatedColumn(
         animationDuration: 200,
@@ -336,7 +332,7 @@ class DialogHelper {
                 ),
                 const MyText(
                   text:
-                  "You’re about to sign out of our app. Drafts are auto-saved and can be restored when you log back in.",
+                      "You are about to log out of our app. Drafts are auto-saved and can be restored when you log back in.",
                   size: 16,
                   color: kFontText7,
                   paddingBottom: 24,
@@ -379,31 +375,37 @@ class DialogHelper {
       Center(
         child: Container(
           margin: AppSizes.DEFAULT,
-          padding: const EdgeInsets.all(24),
+          padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 24),
           decoration: BoxDecoration(
-            color: kWhite,
-            border: Border.all(color: kBorderColor3),
-            borderRadius: BorderRadius.all(Radius.circular(16)),
+            color: kContainerRedColor2,
+            border: Border.all(color: kPrimaryColor.withOpacity(0.28)),
+            borderRadius: const BorderRadius.all(Radius.circular(18)),
             boxShadow: [
               BoxShadow(
-                color: kBlack.withOpacity(0.2),
-                blurRadius: 10,
-                offset: Offset(0, 4),
+                color: kPrimaryColor.withOpacity(0.30),
+                blurRadius: 28,
+                spreadRadius: 2,
+                offset: const Offset(0, 12),
               ),
             ],
           ),
-          child: Column(
+          child: const Column(
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Gap(20),
-              const MyText(
-                text: "Thank you. Your feedback has been sent.",
-                color: kFontText,
-                size: 16,
-                weight: FontWeight.w600,
+              CircleAvatar(
+                radius: 24,
+                backgroundColor: kPrimaryColor,
+                child: Icon(Icons.check_rounded, color: kWhite, size: 28),
               ),
-              Gap(20),
+              Gap(14),
+              MyText(
+                text: "Thank you. Your feedback has been sent.",
+                color: kPrimaryColor2,
+                size: 16,
+                weight: FontWeight.w800,
+                textAlign: TextAlign.center,
+              ),
             ],
           ),
         ),

@@ -2,7 +2,6 @@ import 'package:fire_fighter/constants/app_colors.dart';
 import 'package:fire_fighter/constants/extensions.dart';
 import 'package:fire_fighter/controller/missing_car_controller.dart';
 import 'package:fire_fighter/views/screens/report_module/report_form_widgets.dart';
-import 'package:fire_fighter/views/widget/custom_animated_column.dart';
 import 'package:fire_fighter/views/widget/my_button_new.dart';
 import 'package:fire_fighter/views/widget/my_text_widget.dart';
 import 'package:fire_fighter/views/widget/my_textfeild.dart';
@@ -32,7 +31,7 @@ class _MissingCarScreenState extends State<MissingCarScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: kbackground,
-      resizeToAvoidBottomInset: false,
+      resizeToAvoidBottomInset: true,
       bottomNavigationBar: SafeArea(
         top: false,
         child: Padding(
@@ -75,62 +74,70 @@ class _MissingCarScreenState extends State<MissingCarScreen> {
               ),
               Gap(context.rs(10, min: 8, max: 12)),
               Expanded(
-                child: ReportFormCard(
-                  children: [
-                    Obx(() {
-                      if (c.error.value.isEmpty) return const SizedBox.shrink();
-                      return Padding(
-                        padding: const EdgeInsets.only(bottom: 8),
-                        child: MyText(
-                          text: c.error.value,
-                          size: 12,
-                          color: Colors.red,
-                          maxLines: 2,
-                          textOverflow: TextOverflow.ellipsis,
-                          weight: FontWeight.w700,
-                        ),
-                      );
-                    }),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: _compactField(
-                            label: "Make",
-                            required: true,
-                            controller: c.makeC,
-                            hint: "Make",
-                            icon: Icons.local_offer_rounded,
+                child: SingleChildScrollView(
+                  physics: const BouncingScrollPhysics(),
+                  keyboardDismissBehavior:
+                      ScrollViewKeyboardDismissBehavior.onDrag,
+                  child: ReportFormCard(
+                    children: [
+                      Obx(() {
+                        if (c.error.value.isEmpty) {
+                          return const SizedBox.shrink();
+                        }
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 8),
+                          child: MyText(
+                            text: c.error.value,
+                            size: 12,
+                            color: Colors.red,
+                            maxLines: 2,
+                            textOverflow: TextOverflow.ellipsis,
+                            weight: FontWeight.w700,
                           ),
-                        ),
-                        Gap(context.rs(10, min: 8, max: 12)),
-                        Expanded(
-                          child: _compactField(
-                            label: "Model",
-                            required: true,
-                            controller: c.modelC,
-                            hint: "Model",
-                            icon: Icons.car_repair_rounded,
+                        );
+                      }),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: _compactField(
+                              label: "Make",
+                              required: true,
+                              controller: c.makeC,
+                              hint: "Make",
+                              icon: Icons.local_offer_rounded,
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
-                    _compactField(
-                      label: "Year",
-                      required: true,
-                      controller: c.yearC,
-                      hint: "Enter year",
-                      icon: Icons.calendar_month_rounded,
-                      keyboardType: TextInputType.number,
-                    ),
-                    _compactField(
-                      label: "Message",
-                      controller: c.messageC,
-                      hint: "Optional message",
-                      icon: Icons.notes_rounded,
-                      maxLines: 3,
-                      marginBottom: 0,
-                    ),
-                  ],
+                          Gap(context.rs(10, min: 8, max: 12)),
+                          Expanded(
+                            child: _compactField(
+                              label: "Model",
+                              required: true,
+                              controller: c.modelC,
+                              hint: "Model",
+                              icon: Icons.car_repair_rounded,
+                            ),
+                          ),
+                        ],
+                      ),
+                      _compactField(
+                        label: "Year",
+                        required: true,
+                        controller: c.yearC,
+                        hint: "Enter year",
+                        icon: Icons.calendar_month_rounded,
+                        keyboardType: TextInputType.number,
+                      ),
+                      _compactField(
+                        label: "Message",
+                        controller: c.messageC,
+                        hint: "Optional message",
+                        icon: Icons.notes_rounded,
+                        showIcon: false,
+                        maxLines: 3,
+                        marginBottom: 0,
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ],
@@ -149,6 +156,7 @@ class _MissingCarScreenState extends State<MissingCarScreen> {
     int maxLines = 1,
     double marginBottom = 8,
     TextInputType? keyboardType,
+    bool showIcon = true,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -161,7 +169,7 @@ class _MissingCarScreenState extends State<MissingCarScreen> {
           hintColor: kFontText5,
           hintWeight: FontWeight.w600,
           marginBottom: marginBottom,
-          prefix: ReportFieldIcon(icon),
+          prefix: showIcon ? ReportFieldIcon(icon) : null,
           borderColor: kBorderColor3,
           keyboardType: keyboardType,
           maxLines: maxLines,

@@ -75,45 +75,53 @@ class _SignUpScreenState extends State<SignUpScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  AuthFieldLabel(text: "Full Name"),
-                  MyTextField(
-                    controller: c.fullNameC,
-                    hint: "Enter your full name",
-                    hintsize: 14,
-                    hintColor: kFontText5,
-                    hintWeight: FontWeight.w600,
-                    marginBottom: compact ? 8 : 10,
-                    prefix: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: CommonImageView(
-                        imagePath: Assets.imagesPerson,
-                        height: 24,
+                  AuthFieldLabel(text: "Full Name *"),
+                  Obx(
+                    () => MyTextField(
+                      controller: c.fullNameC,
+                      hint: "Enter your full name",
+                      hintsize: 14,
+                      hintColor: kFontText5,
+                      hintWeight: FontWeight.w600,
+                      marginBottom: compact ? 8 : 10,
+                      errorText: c.fullNameError.value,
+                      onChanged: (_) => c.fullNameError.value = "",
+                      prefix: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: CommonImageView(
+                          imagePath: Assets.imagesPerson,
+                          height: 24,
+                        ),
                       ),
+                      borderColor: kBorderColor3,
+                      focusNode: _focusNodeFullName,
                     ),
-                    borderColor: kBorderColor3,
-                    focusNode: _focusNodeFullName,
                   ),
-                  AuthFieldLabel(text: "Email Address"),
-                  MyTextField(
-                    controller: c.emailC,
-                    hint: "name@example.com",
-                    hintsize: 14,
-                    hintColor: kFontText5,
-                    hintWeight: FontWeight.w600,
-                    keyboardType: TextInputType.emailAddress,
-                    marginBottom: compact ? 8 : 10,
-                    prefix: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: CommonImageView(
-                        imagePath: Assets.imagesEmail,
-                        height: 24,
+                  AuthFieldLabel(text: "Email Address *"),
+                  Obx(
+                    () => MyTextField(
+                      controller: c.emailC,
+                      hint: "name@example.com",
+                      hintsize: 14,
+                      hintColor: kFontText5,
+                      hintWeight: FontWeight.w600,
+                      keyboardType: TextInputType.emailAddress,
+                      marginBottom: compact ? 8 : 10,
+                      errorText: c.emailError.value,
+                      onChanged: (_) => c.emailError.value = "",
+                      prefix: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: CommonImageView(
+                          imagePath: Assets.imagesEmail,
+                          height: 24,
+                        ),
                       ),
+                      borderColor: kBorderColor3,
+                      focusNode: _focusNodeEmail,
                     ),
-                    borderColor: kBorderColor3,
-                    focusNode: _focusNodeEmail,
                   ),
                   AuthFieldLabel(
-                    text: "Password",
+                    text: "Password *",
                     iconPath: Assets.imagesPasswordIcon,
                   ),
                   Obx(
@@ -126,6 +134,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       marginBottom: compact ? 8 : 10,
                       focusNode: _focusNodePassword,
                       obscureText: c.obscurePass.value,
+                      errorText: c.passwordError.value,
+                      onChanged: (_) {
+                        c.passwordError.value = "";
+                        c.validatePasswordMatchLive();
+                      },
                       prefix: Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: CommonImageView(
@@ -144,7 +157,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       ),
                     ),
                   ),
-                  AuthFieldLabel(text: "Confirm Password"),
+                  AuthFieldLabel(text: "Confirm Password *"),
                   Obx(
                     () => MyTextField(
                       controller: c.confirmPasswordC,
@@ -155,6 +168,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       marginBottom: 0,
                       focusNode: _focusNodeConfirmPassword,
                       obscureText: c.obscureConfirm.value,
+                      errorText: c.confirmPasswordError.value,
+                      onChanged: (_) => c.validatePasswordMatchLive(),
                       prefix: Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: CommonImageView(
@@ -181,8 +196,25 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       value: c.agreed.value,
                       onChanged: (bool value) {
                         c.agreed.value = value;
+                        c.termsError.value = "";
                       },
                     ),
+                  ),
+                  Obx(
+                    () =>
+                        c.termsError.value.isEmpty
+                            ? const SizedBox.shrink()
+                            : Padding(
+                              padding: const EdgeInsets.only(top: 6),
+                              child: Text(
+                                c.termsError.value,
+                                style: TextStyle(
+                                  color: kPrimaryColor,
+                                  fontSize: context.rs(11, min: 10),
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                            ),
                   ),
                   context.rs(compact ? 18 : 24).vSpace,
                   Obx(

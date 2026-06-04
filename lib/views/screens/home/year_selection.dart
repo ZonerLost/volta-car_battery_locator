@@ -3,6 +3,7 @@ import 'package:fire_fighter/constants/app_colors.dart';
 import 'package:fire_fighter/constants/extensions.dart';
 import 'package:fire_fighter/controller/home_controller.dart';
 import 'package:fire_fighter/generated/assets.dart';
+import 'package:fire_fighter/utils/app_snackbar.dart';
 import 'package:fire_fighter/views/screens/home/locate_battery.dart';
 import 'package:fire_fighter/views/widget/common_image_view_widget.dart';
 import 'package:fire_fighter/views/widget/custom_animated_column.dart';
@@ -75,7 +76,7 @@ class _YearSelectionScreenState extends State<YearSelectionScreen> {
             padding: EdgeInsets.all(context.rs(20, min: 18, max: 26)),
             decoration: BoxDecoration(
               gradient: const LinearGradient(
-                colors: [kSecondaryColor, kbackgroundBlue2Container],
+                colors: [kPrimaryColor, kPrimaryColor2],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
@@ -84,7 +85,7 @@ class _YearSelectionScreenState extends State<YearSelectionScreen> {
               ),
               boxShadow: [
                 BoxShadow(
-                  color: kSecondaryColor.withOpacity(0.24),
+                  color: kPrimaryColor.withOpacity(0.24),
                   blurRadius: 28,
                   offset: const Offset(0, 14),
                 ),
@@ -224,7 +225,7 @@ class _YearSelectionScreenState extends State<YearSelectionScreen> {
                         await hc.selectYearLabelAndFetchCarId(yearLabel);
 
                         if (hc.selectedCarId.value.isEmpty) {
-                          Get.snackbar(
+                          AppSnackBar.show(
                             "Locate Battery",
                             "No battery location found for $yearLabel.",
                           );

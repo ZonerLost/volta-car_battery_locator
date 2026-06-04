@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:fire_fighter/utils/app_snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
@@ -32,11 +33,11 @@ class GeneralFeedbackController extends GetxController {
 
   /// ✅ Counter doc
   /// modules -> feedbackReports -> meta -> counters
-  DocumentReference<Map<String, dynamic>> get _counterRef =>
-      _db.collection("modules")
-          .doc("feedbackReports")
-          .collection("meta")
-          .doc("counters");
+  DocumentReference<Map<String, dynamic>> get _counterRef => _db
+      .collection("modules")
+      .doc("feedbackReports")
+      .collection("meta")
+      .doc("counters");
 
   @override
   void onInit() {
@@ -69,7 +70,7 @@ class GeneralFeedbackController extends GetxController {
       selectedFile = File(x.path);
       selectedFileName.value = x.name; // proof.png etc
     } catch (e) {
-      Get.snackbar("Error", "Unable to pick image: $e");
+      AppSnackBar.show("Error", "Unable to pick image: $e");
     }
   }
 
@@ -124,7 +125,9 @@ class GeneralFeedbackController extends GetxController {
     if (selectedFile == null) return null;
 
     final fileName =
-    selectedFileName.value.trim().isEmpty ? "proof.jpg" : selectedFileName.value.trim();
+        selectedFileName.value.trim().isEmpty
+            ? "proof.jpg"
+            : selectedFileName.value.trim();
 
     final ref = _storage.ref().child("feedbackReports/$reportId/$fileName");
 
@@ -137,7 +140,7 @@ class GeneralFeedbackController extends GetxController {
   Future<void> submit() async {
     if (!_validate()) {
       if (error.value.isNotEmpty) {
-        Get.snackbar("Validation", error.value);
+        AppSnackBar.show("Validation", error.value);
       }
       return;
     }
@@ -170,7 +173,9 @@ class GeneralFeedbackController extends GetxController {
         "email": email,
         "message": message,
         "attachmentName":
-        selectedFileName.value.trim().isEmpty ? null : selectedFileName.value.trim(),
+            selectedFileName.value.trim().isEmpty
+                ? null
+                : selectedFileName.value.trim(),
         "attachmentUrl": fileUrl,
         "reviewedAt": null,
         "reviewedByUid": null,
@@ -179,9 +184,9 @@ class GeneralFeedbackController extends GetxController {
       await reportsRef.doc(reportId).set(data, SetOptions(merge: true));
 
       Get.back(result: true);
-      Get.snackbar("Success", "Feedback submitted successfully.");
+      AppSnackBar.show("Success", "Feedback submitted successfully.");
     } catch (e) {
-      Get.snackbar("Error", e.toString());
+      AppSnackBar.show("Error", e.toString());
     } finally {
       isSubmitting.value = false;
     }

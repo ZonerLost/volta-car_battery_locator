@@ -1,5 +1,6 @@
 import 'package:fire_fighter/constants/app_colors.dart';
 import 'package:fire_fighter/views/screens/auth/login.dart';
+import 'package:fire_fighter/views/screens/bottom_nav/BottomBarNav.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -28,10 +29,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
-      theme: ThemeData(
-        useMaterial3: true,
-        scaffoldBackgroundColor: kWhite,
-      ),
+      theme: ThemeData(useMaterial3: true, scaffoldBackgroundColor: kWhite),
       debugShowCheckedModeBanner: false,
       debugShowMaterialGrid: false,
       initialRoute: AppRoutes.splash,
@@ -56,7 +54,7 @@ class Root extends StatelessWidget {
           );
         }
 
-        return const LoginScreen();
+        return snap.data == null ? const LoginScreen() : const BottomNavBar();
       },
     );
   }

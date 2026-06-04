@@ -99,24 +99,24 @@ class _LocateBatteryScreenState extends State<LocateBatteryScreen> {
                     return Center(
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
-                  children: [
-                    MyText(
-                      text:
-                          c.error.value.isNotEmpty
-                              ? c.error.value
-                              : "Car data not found",
-                      size: 18,
-                      color: kFontText,
-                      weight: FontWeight.w700,
-                    ),
-                    Gap(12),
-                    MyButton(
-                      onTap: () => c.fetchCarById(widget.carId),
-                      radius: 12,
-                      buttonText: "Retry",
-                      hasgrad: true,
-                    ),
-                  ],
+                        children: [
+                          MyText(
+                            text:
+                                c.error.value.isNotEmpty
+                                    ? c.error.value
+                                    : "Car data not found",
+                            size: 18,
+                            color: kFontText,
+                            weight: FontWeight.w700,
+                          ),
+                          Gap(12),
+                          MyButton(
+                            onTap: () => c.fetchCarById(widget.carId),
+                            radius: 12,
+                            buttonText: "Retry",
+                            hasgrad: true,
+                          ),
+                        ],
                       ),
                     );
                   }
@@ -162,8 +162,8 @@ class _LocateBatteryScreenState extends State<LocateBatteryScreen> {
                           title: "Battery Location",
                           body: batteryInfo.locationText,
                           bodyMaxLines: batteryInfo.hasAccessNotes ? 3 : 4,
-                          backgroundColor: const Color(0x3387C1FF),
-                          borderColor: const Color(0x6687C1FF),
+                          backgroundColor: kPrimaryColor.withOpacity(0.08),
+                          borderColor: kPrimaryColor.withOpacity(0.22),
                         ),
                       ],
                       if (batteryInfo.hasAccessNotes) ...[
@@ -172,8 +172,9 @@ class _LocateBatteryScreenState extends State<LocateBatteryScreen> {
                           title: "Access Information",
                           body: batteryInfo.accessNotes,
                           bodyMaxLines: 3,
-                          backgroundColor:
-                              kSecondaryGreenColor.withOpacity(0.12),
+                          backgroundColor: kSecondaryGreenColor.withOpacity(
+                            0.12,
+                          ),
                           borderColor: kBorderColor3,
                         ),
                       ],

@@ -46,7 +46,7 @@ class AuthRepo {
         "updatedAt": FieldValue.serverTimestamp(),
       }, SetOptions(merge: true));
     } on FirebaseAuthException catch (e) {
-      throw Exception(e.message ?? "Signup failed");
+      throw Exception(_friendlyAuthMessage(e));
     }
   }
 
@@ -68,7 +68,7 @@ class AuthRepo {
         }, SetOptions(merge: true));
       }
     } on FirebaseAuthException catch (e) {
-      throw Exception(e.message ?? "Login failed");
+      throw Exception(_friendlyAuthMessage(e));
     }
   }
 
@@ -81,6 +81,20 @@ class AuthRepo {
     } on FirebaseAuthException {
       rethrow;
     }
+  }
+
+  Future<bool> isEmailRegistered(String email) async {
+    final raw = email.trim();
+    final normalized = email.trim().toLowerCase();
+    final users = _db.collection("users");
+    final normalizedSnap =
+        await users.where("email", isEqualTo: normalized).limit(1).get();
+    if (normalizedSnap.docs.isNotEmpty) return true;
+
+    if (raw == normalized) return false;
+
+    final rawSnap = await users.where("email", isEqualTo: raw).limit(1).get();
+    return rawSnap.docs.isNotEmpty;
   }
 
   // =========================
@@ -158,11 +172,12 @@ class AuthRepo {
   }
 
   String _friendlyGooglePlatformMsg(PlatformException e) {
-    final raw = [
-      e.code,
-      e.message,
-      e.details?.toString(),
-    ].whereType<String>().join(" ").toLowerCase();
+    final raw =
+        [
+          e.code,
+          e.message,
+          e.details?.toString(),
+        ].whereType<String>().join(" ").toLowerCase();
 
     if (raw.contains("10") || raw.contains("developer_error")) {
       return "Google sign-in is not configured correctly. Please check Firebase SHA-1/SHA-256 and download a fresh google-services.json.";
@@ -211,6 +226,27 @@ class AuthRepo {
   // CURRENT USER
   // =========================
   User? get currentUser => _auth.currentUser;
+
+  String _friendlyAuthMessage(FirebaseAuthException e) {
+    switch (e.code) {
+      case "invalid-credential":
+      case "wrong-password":
+      case "user-not-found":
+        return "Email or password is incorrect. Please try again.";
+      case "invalid-email":
+        return "Please enter a valid email address.";
+      case "email-already-in-use":
+        return "An account already exists with this email.";
+      case "weak-password":
+        return "Password must be at least 6 characters.";
+      case "too-many-requests":
+        return "Too many attempts. Please try again later.";
+      case "network-request-failed":
+        return "Network issue. Please check your internet and try again.";
+      default:
+        return e.message ?? "Something went wrong. Please try again.";
+    }
+  }
 
   // =========================
   // HELPERS

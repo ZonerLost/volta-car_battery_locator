@@ -26,14 +26,14 @@ class ReportIssueScreen extends StatelessWidget {
         title: "Missing Car",
         subtitle: "Your vehicle is not available in the locator.",
         icon: Icons.directions_car_filled_rounded,
-        color: kSecondaryColor,
+        color: kPrimaryColor,
         onTap: () => Get.to(() => const MissingCarScreen()),
       ),
       _ReportOption(
         title: "General Feedback",
         subtitle: "Share another issue, suggestion, or app feedback.",
         icon: Icons.chat_bubble_rounded,
-        color: kSecondaryGreenColor,
+        color: kPrimaryColor,
         onTap: () => Get.to(() => const GeneralFeedbackScreen()),
       ),
     ];

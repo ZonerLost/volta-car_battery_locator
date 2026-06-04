@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:fire_fighter/utils/app_snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -22,9 +23,11 @@ class WrongLocationController extends GetxController {
       _db.collection("modules").doc("feedbackReports").collection("reports");
 
   /// ✅ NEW counter doc inside feedbackReports (recommended)
-  DocumentReference<Map<String, dynamic>> get _counterRef =>
-      _db.collection("modules").doc("feedbackReports")
-          .collection("meta").doc("counters");
+  DocumentReference<Map<String, dynamic>> get _counterRef => _db
+      .collection("modules")
+      .doc("feedbackReports")
+      .collection("meta")
+      .doc("counters");
 
   @override
   void onClose() {
@@ -45,7 +48,9 @@ class WrongLocationController extends GetxController {
   }) {
     if ((make ?? "").trim().isNotEmpty) makeC.text = make!.trim();
     if ((model ?? "").trim().isNotEmpty) modelC.text = model!.trim();
-    if ((year ?? "").trim().isNotEmpty) yearC.text = year!.trim();
+    if ((year ?? "").trim().isNotEmpty) {
+      yearC.text = _cleanYearLabel(year!.trim());
+    }
     if ((reportedArea ?? "").trim().isNotEmpty) {
       reportedAreaC.text = reportedArea!.trim();
     }
@@ -67,9 +72,13 @@ class WrongLocationController extends GetxController {
       return false;
     }
 
-    final year = int.tryParse(yearC.text.trim());
-    if (year == null || year < 1900 || year > 2100) {
-      error.value = "Please enter a valid Year (e.g. 2015).";
+    final yearText = _cleanYearLabel(yearC.text.trim());
+    yearC.text = yearText;
+    final yearRange = RegExp(r'^\d{4}\s*-\s*\d{4}$').hasMatch(yearText);
+    final singleYear = RegExp(r'^\d{4}$').hasMatch(yearText);
+    final isValidYear = yearRange || singleYear;
+    if (!isValidYear) {
+      error.value = "Please enter a valid Year (e.g. 2015 or 2000-2002).";
       return false;
     }
 
@@ -111,7 +120,7 @@ class WrongLocationController extends GetxController {
 
       final make = makeC.text.trim();
       final model = modelC.text.trim();
-      final year = int.parse(yearC.text.trim());
+      final yearText = _cleanYearLabel(yearC.text.trim());
       final reportedArea = reportedAreaC.text.trim();
       final correctArea = correctAreaC.text.trim();
       final msg = messageC.text.trim();
@@ -129,8 +138,8 @@ class WrongLocationController extends GetxController {
         "submittedBy": email.isEmpty ? null : email,
         "make": make,
         "model": model,
-        "year": year,
-        "car": "$make $model $year",
+        "year": yearText,
+        "car": "$make $model $yearText",
         "reportedArea": reportedArea.isEmpty ? null : reportedArea,
         "correctArea": correctArea,
         "message": msg.isEmpty ? null : msg,
@@ -142,12 +151,26 @@ class WrongLocationController extends GetxController {
 
       error.value = "";
       Get.back(result: true);
-      Get.snackbar("Report Submitted", "Thanks! Your feedback has been sent.");
+      AppSnackBar.show(
+        "Report Submitted",
+        "Thanks! Your feedback has been sent.",
+      );
     } catch (e) {
       error.value = e.toString();
-      Get.snackbar("Error", error.value);
+      AppSnackBar.show("Error", error.value);
     } finally {
       isSubmitting.value = false;
     }
+  }
+
+  String _cleanYearLabel(String value) {
+    final text = value.trim();
+    final rangeMatch = RegExp(r'\b(\d{4})\s*-\s*(\d{4})\b').firstMatch(text);
+    if (rangeMatch != null) {
+      return "${rangeMatch.group(1)}-${rangeMatch.group(2)}";
+    }
+
+    final yearMatch = RegExp(r'\b(\d{4})\b').firstMatch(text);
+    return yearMatch?.group(1) ?? text;
   }
 }

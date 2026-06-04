@@ -101,6 +101,8 @@ class _MyTextFieldState extends State<MyTextField> {
     // ✅ Decide secure value:
     // if obscureText passed, use it, otherwise use isObSecure
     final bool secure = widget.obscureText ?? widget.isObSecure;
+    final bool hasError = (widget.errorText ?? "").trim().isNotEmpty;
+    final bool isMultiline = (widget.maxLines ?? 1) > 1;
 
     return Animate(
       effects: const [
@@ -132,8 +134,11 @@ class _MyTextFieldState extends State<MyTextField> {
               decoration: BoxDecoration(
                 color: kWhite,
                 border: Border.all(
-                  color: widget.borderColor ?? kBorderColor3,
-                  width: 1,
+                  color:
+                      hasError
+                          ? kPrimaryColor
+                          : widget.borderColor ?? kBorderColor3,
+                  width: hasError ? 1.4 : 1,
                 ),
                 borderRadius: BorderRadius.circular(
                   context.rs(widget.radius ?? 12),
@@ -143,7 +148,10 @@ class _MyTextFieldState extends State<MyTextField> {
                 validator: widget.validator,
                 focusNode: widget.focusNode,
                 onTap: widget.onTap,
-                textAlignVertical: TextAlignVertical.center,
+                textAlignVertical:
+                    isMultiline
+                        ? TextAlignVertical.top
+                        : TextAlignVertical.center,
                 keyboardType: widget.keyboardType,
                 cursorColor: kPrimaryColor,
                 maxLines: widget.maxLines ?? 1,
@@ -178,7 +186,10 @@ class _MyTextFieldState extends State<MyTextField> {
                     borderSide: const BorderSide(color: kBorderColor, width: 1),
                   ),
                   prefixIcon: widget.prefix,
-                  prefixIconConstraints: const BoxConstraints.tightFor(),
+                  prefixIconConstraints:
+                      widget.prefix == null
+                          ? const BoxConstraints.tightFor(width: 0, height: 0)
+                          : const BoxConstraints.tightFor(),
                   suffixIconConstraints: const BoxConstraints.tightFor(),
                   suffixIcon: Padding(
                     padding: const EdgeInsets.only(left: 16, right: 16),
@@ -186,7 +197,7 @@ class _MyTextFieldState extends State<MyTextField> {
                   ),
                   contentPadding: EdgeInsets.symmetric(
                     horizontal: context.rs(16),
-                    vertical: (widget.maxLines ?? 1) > 1 ? context.rs(15) : 0,
+                    vertical: isMultiline ? context.rs(15) : 0,
                   ),
                   hintText: widget.hint,
                   hintStyle: TextStyle(
@@ -206,6 +217,13 @@ class _MyTextFieldState extends State<MyTextField> {
                       context.rs(widget.radius ?? 8),
                     ),
                     borderSide: const BorderSide(width: 1, color: Colors.red),
+                  ),
+                  errorText: hasError ? widget.errorText : null,
+                  errorMaxLines: 2,
+                  errorStyle: TextStyle(
+                    color: kPrimaryColor,
+                    fontSize: context.rs(11, min: 10),
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
               ),

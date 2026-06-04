@@ -6,7 +6,6 @@ import 'package:fire_fighter/views/screens/bottom_nav/BottomBarNav.dart';
 import 'package:fire_fighter/views/screens/report_module/report_form_widgets.dart';
 import 'package:fire_fighter/views/widget/common_image_view_widget.dart';
 import 'package:fire_fighter/views/widget/my_button_new.dart';
-import 'package:fire_fighter/views/widget/my_text_widget.dart';
 import 'package:fire_fighter/views/widget/my_textfeild.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
@@ -37,7 +36,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: kWhite,
-      resizeToAvoidBottomInset: false,
+      resizeToAvoidBottomInset: true,
       bottomNavigationBar: SafeArea(
         top: false,
         child: Padding(
@@ -93,72 +92,79 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     );
                   }
 
-                  return ReportFormCard(
-                    children: [
-                      reportLabel("Full Name"),
-                      MyTextField(
-                        controller: c.fullNameC,
-                        hint: "Enter your full name",
-                        hintsize: 13,
-                        hintColor: kFontText5,
-                        hintWeight: FontWeight.w600,
-                        marginBottom: 10,
-                        prefix: const ReportFieldIcon(Icons.person_rounded),
-                        borderColor: kBorderColor3,
-                      ),
-                      reportLabel("Email Address"),
-                      MyTextField(
-                        controller: c.emailC,
-                        hint: "Enter your email",
-                        hintsize: 13,
-                        hintColor: kFontText5,
-                        hintWeight: FontWeight.w600,
-                        marginBottom: 10,
-                        prefix: const ReportFieldIcon(Icons.email_rounded),
-                        borderColor: kBorderColor3,
-                        keyboardType: TextInputType.emailAddress,
-                      ),
-                      Row(
-                        children: [
-                          Expanded(child: reportLabel("New Password")),
-                          Bounce(
-                            onTap: () async => c.changePassword(),
-                            child: MyText(
-                              text: "Update",
-                              size: 14,
-                              paddingBottom: 10,
-                              color: kPrimaryColor,
-                              weight: FontWeight.w800,
-                            ),
-                          ),
-                        ],
-                      ),
-                      Obx(
-                        () => MyTextField(
-                          controller: c.newPasswordC,
-                          hint: "Enter new password",
+                  return SingleChildScrollView(
+                    physics: const BouncingScrollPhysics(),
+                    keyboardDismissBehavior:
+                        ScrollViewKeyboardDismissBehavior.onDrag,
+                    child: ReportFormCard(
+                      children: [
+                        reportLabel("Full Name"),
+                        MyTextField(
+                          controller: c.fullNameC,
+                          hint: "Enter your full name",
                           hintsize: 13,
                           hintColor: kFontText5,
                           hintWeight: FontWeight.w600,
-                          marginBottom: 0,
-                          obscureText: c.obscurePassword.value,
-                          prefix: const ReportFieldIcon(Icons.lock_rounded),
+                          marginBottom: 10,
+                          prefix: const ReportFieldIcon(Icons.person_rounded),
                           borderColor: kBorderColor3,
-                          suffix: Bounce(
-                            onTap: c.togglePasswordVisibility,
-                            child: Padding(
-                              padding: EdgeInsets.only(
-                                right: context.rs(2, min: 0, max: 4),
-                              ),
-                              child: CommonImageView(
-                                imagePath: Assets.imagesEye,
-                                height: context.rs(22, min: 20, max: 24),
+                        ),
+                        reportLabel("Email Address"),
+                        MyTextField(
+                          controller: c.emailC,
+                          hint: "Enter your email",
+                          hintsize: 13,
+                          hintColor: kFontText5,
+                          hintWeight: FontWeight.w600,
+                          marginBottom: 10,
+                          prefix: const ReportFieldIcon(Icons.email_rounded),
+                          borderColor: kBorderColor3,
+                          keyboardType: TextInputType.emailAddress,
+                          isReadOnly: true,
+                          filledColor: kGreyContainerGreyColor2,
+                        ),
+                        reportLabel("Current Password"),
+                        MyTextField(
+                          controller: c.currentPasswordC,
+                          hint: "Enter current password",
+                          hintsize: 13,
+                          hintColor: kFontText5,
+                          hintWeight: FontWeight.w600,
+                          marginBottom: 10,
+                          obscureText: true,
+                          prefix: const ReportFieldIcon(
+                            Icons.lock_outline_rounded,
+                          ),
+                          borderColor: kBorderColor3,
+                        ),
+                        reportLabel("New Password"),
+                        Obx(
+                          () => MyTextField(
+                            controller: c.newPasswordC,
+                            hint: "Enter new password",
+                            hintsize: 13,
+                            hintColor: kFontText5,
+                            hintWeight: FontWeight.w600,
+                            marginBottom: 0,
+                            obscureText: c.obscurePassword.value,
+                            prefix: const ReportFieldIcon(Icons.lock_rounded),
+                            borderColor: kBorderColor3,
+                            suffix: Bounce(
+                              onTap: c.togglePasswordVisibility,
+                              child: Padding(
+                                padding: EdgeInsets.only(
+                                  right: context.rs(2, min: 0, max: 4),
+                                ),
+                                child: CommonImageView(
+                                  imagePath: Assets.imagesEye,
+                                  height: context.rs(22, min: 20, max: 24),
+                                ),
                               ),
                             ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   );
                 }),
               ),

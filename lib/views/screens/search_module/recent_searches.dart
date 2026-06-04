@@ -1,6 +1,5 @@
 // ignore_for_file: prefer_const_constructors
 import 'package:bounce/bounce.dart';
-import 'package:fire_fighter/views/screens/home/locate_battery.dart';
 import 'package:fire_fighter/views/widget/my_text_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
@@ -55,13 +54,16 @@ class _RecentSearchesScreenState extends State<RecentSearchesScreen> {
                 }
 
                 if (rc.searches.isEmpty) {
-                  return Padding(
-                    padding: const EdgeInsets.only(top: 20),
-                    child: MyText(
-                      text: "No recent searches yet.",
-                      size: 14,
-                      color: kFontText7,
-                      weight: FontWeight.w500,
+                  return SizedBox(
+                    height: MediaQuery.sizeOf(context).height * 0.45,
+                    child: Center(
+                      child: MyText(
+                        text: "No recent searches yet.",
+                        size: 15,
+                        color: kFontText7,
+                        weight: FontWeight.w600,
+                        textAlign: TextAlign.center,
+                      ),
                     ),
                   );
                 }
@@ -79,7 +81,6 @@ class _RecentSearchesScreenState extends State<RecentSearchesScreen> {
                       child: Bounce(
                         onTap: () {
                           rc.openRecent(s);
-
                         },
                         child: Container(
                           padding: EdgeInsets.all(12),
@@ -94,21 +95,24 @@ class _RecentSearchesScreenState extends State<RecentSearchesScreen> {
                               // Use Image.network(s.diagramUrl) with fallback
                               ClipRRect(
                                 borderRadius: BorderRadius.circular(8),
-                                child: s.thumbnailUrl.isNotEmpty
-                                    ? Image.network(
-                                  s.thumbnailUrl,
-                                  height: 40,
-                                  width: 40,
-                                  fit: BoxFit.cover,
-                                  errorBuilder: (_, __, ___) => CommonImageView(
-                                    imagePath: Assets.imagesCarRecent,
-                                    height: 40,
-                                  ),
-                                )
-                                    : CommonImageView(
-                                  imagePath: Assets.imagesCarRecent,
-                                  height: 40,
-                                ),
+                                child:
+                                    s.thumbnailUrl.isNotEmpty
+                                        ? Image.network(
+                                          s.thumbnailUrl,
+                                          height: 40,
+                                          width: 40,
+                                          fit: BoxFit.cover,
+                                          errorBuilder:
+                                              (_, __, ___) => CommonImageView(
+                                                imagePath:
+                                                    Assets.imagesCarRecent,
+                                                height: 40,
+                                              ),
+                                        )
+                                        : CommonImageView(
+                                          imagePath: Assets.imagesCarRecent,
+                                          height: 40,
+                                        ),
                               ),
 
                               Gap(12),
@@ -117,16 +121,18 @@ class _RecentSearchesScreenState extends State<RecentSearchesScreen> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     MyText(
-                                      text: "${s.make} ${s.model} (${s.yearLabel})",
+                                      text:
+                                          "${s.make} ${s.model} (${s.yearLabel})",
 
                                       size: 16,
                                       color: kFontText,
                                       weight: FontWeight.w600,
                                     ),
                                     MyText(
-                                      text: s.location.isEmpty
-                                          ? "Battery location saved"
-                                          : s.location,
+                                      text:
+                                          s.location.isEmpty
+                                              ? "Battery location saved"
+                                              : s.location,
                                       size: 14,
                                       color: kFontText7,
                                       weight: FontWeight.w500,

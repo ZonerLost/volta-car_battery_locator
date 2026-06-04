@@ -2,7 +2,6 @@ import 'package:fire_fighter/constants/app_colors.dart';
 import 'package:fire_fighter/constants/extensions.dart';
 import 'package:fire_fighter/controller/general_feedback_controller.dart';
 import 'package:fire_fighter/views/screens/report_module/report_form_widgets.dart';
-import 'package:fire_fighter/views/widget/custom_animated_column.dart';
 import 'package:fire_fighter/views/widget/my_button_new.dart';
 import 'package:fire_fighter/views/widget/my_text_widget.dart';
 import 'package:fire_fighter/views/widget/my_textfeild.dart';
@@ -35,8 +34,12 @@ class _GeneralFeedbackScreenState extends State<GeneralFeedbackScreen> {
     final category = widget.initialCategory?.trim() ?? "";
     final message = widget.initialMessage?.trim() ?? "";
 
-    if (category.isNotEmpty) c.categoryC.text = category;
-    if (message.isNotEmpty) c.messageC.text = message;
+    if (category.isNotEmpty) {
+      c.categoryC.text = category;
+    }
+    if (message.isNotEmpty) {
+      c.messageC.text = message;
+    }
   }
 
   @override
@@ -51,7 +54,7 @@ class _GeneralFeedbackScreenState extends State<GeneralFeedbackScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: kbackground,
-      resizeToAvoidBottomInset: false,
+      resizeToAvoidBottomInset: true,
       bottomNavigationBar: SafeArea(
         top: false,
         child: Padding(
@@ -94,47 +97,49 @@ class _GeneralFeedbackScreenState extends State<GeneralFeedbackScreen> {
               ),
               Gap(context.rs(10, min: 8, max: 12)),
               Expanded(
-                child: ReportFormCard(
-                  children: [
-                    Obx(() {
-                      if (c.error.value.isEmpty) return const SizedBox.shrink();
-                      return Padding(
-                        padding: const EdgeInsets.only(bottom: 8),
-                        child: MyText(
-                          text: c.error.value,
-                          size: 12,
-                          color: Colors.red,
-                          maxLines: 2,
-                          textOverflow: TextOverflow.ellipsis,
-                          weight: FontWeight.w700,
-                        ),
-                      );
-                    }),
-                    _compactField(
-                      label: "Email",
-                      required: true,
-                      controller: c.emailC,
-                      hint: "Email",
-                      icon: Icons.email_rounded,
-                      keyboardType: TextInputType.emailAddress,
-                    ),
-                    _compactField(
-                      label: "Category",
-                      required: true,
-                      controller: c.categoryC,
-                      hint: "Category",
-                      icon: Icons.sell_rounded,
-                    ),
-                    _compactField(
-                      label: "Message",
-                      required: true,
-                      controller: c.messageC,
-                      hint: "Write your message",
-                      icon: Icons.notes_rounded,
-                      maxLines: 4,
-                      marginBottom: 0,
-                    ),
-                  ],
+                child: SingleChildScrollView(
+                  physics: const BouncingScrollPhysics(),
+                  keyboardDismissBehavior:
+                      ScrollViewKeyboardDismissBehavior.onDrag,
+                  child: ReportFormCard(
+                    children: [
+                      Obx(() {
+                        if (c.error.value.isEmpty) {
+                          return const SizedBox.shrink();
+                        }
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 8),
+                          child: MyText(
+                            text: c.error.value,
+                            size: 12,
+                            color: Colors.red,
+                            maxLines: 2,
+                            textOverflow: TextOverflow.ellipsis,
+                            weight: FontWeight.w700,
+                          ),
+                        );
+                      }),
+                      _compactField(
+                        label: "Email",
+                        required: true,
+                        controller: c.emailC,
+                        hint: "Email",
+                        icon: Icons.email_rounded,
+                        keyboardType: TextInputType.emailAddress,
+                      ),
+                      _categoryDropdown(context),
+                      _compactField(
+                        label: "Message",
+                        required: true,
+                        controller: c.messageC,
+                        hint: "Write your message",
+                        icon: Icons.notes_rounded,
+                        showPrefix: false,
+                        maxLines: 4,
+                        marginBottom: 0,
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ],
@@ -153,6 +158,7 @@ class _GeneralFeedbackScreenState extends State<GeneralFeedbackScreen> {
     int maxLines = 1,
     double marginBottom = 8,
     TextInputType? keyboardType,
+    bool showPrefix = true,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -165,11 +171,89 @@ class _GeneralFeedbackScreenState extends State<GeneralFeedbackScreen> {
           hintColor: kFontText5,
           hintWeight: FontWeight.w600,
           marginBottom: marginBottom,
-          prefix: ReportFieldIcon(icon),
+          prefix: showPrefix ? ReportFieldIcon(icon) : null,
           borderColor: kBorderColor3,
           keyboardType: keyboardType,
           maxLines: maxLines,
         ),
+      ],
+    );
+  }
+
+  Widget _categoryDropdown(BuildContext context) {
+    const categories = [
+      "App issue",
+      "Battery location",
+      "Can't find battery",
+      "Found battery in another location",
+      "Vehicle data",
+      "Suggestion",
+      "Other",
+    ];
+
+    final selected =
+        categories.contains(c.categoryC.text.trim())
+            ? c.categoryC.text.trim()
+            : null;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        reportLabel("Category", isRequired: true),
+        DropdownButtonFormField<String>(
+          value: selected,
+          isExpanded: true,
+          icon: const Icon(Icons.keyboard_arrow_down_rounded),
+          decoration: InputDecoration(
+            hintText: "Category",
+            filled: true,
+            fillColor: kWhite,
+            prefixIcon: const ReportFieldIcon(Icons.sell_rounded),
+            hintStyle: TextStyle(
+              color: kFontText5,
+              fontSize: context.rs(13, min: 12),
+              fontWeight: FontWeight.w600,
+            ),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(context.rs(12)),
+              borderSide: BorderSide(color: kBorderColor3),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(context.rs(12)),
+              borderSide: BorderSide(color: kBorderColor3),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(context.rs(12)),
+              borderSide: const BorderSide(color: kPrimaryColor, width: 1.4),
+            ),
+            contentPadding: EdgeInsets.symmetric(
+              horizontal: context.rs(16),
+              vertical: context.rs(14),
+            ),
+          ),
+          items:
+              categories
+                  .map(
+                    (category) => DropdownMenuItem(
+                      value: category,
+                      child: Text(
+                        category,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          color: kFontText,
+                          fontSize: context.rs(13, min: 12),
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  )
+                  .toList(),
+          onChanged: (value) {
+            if (value == null) return;
+            c.categoryC.text = value;
+          },
+        ),
+        Gap(context.rs(8, min: 6, max: 10)),
       ],
     );
   }

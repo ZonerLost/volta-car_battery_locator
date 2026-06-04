@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fire_fighter/constants/app_colors.dart';
 import 'package:fire_fighter/constants/extensions.dart';
 import 'package:fire_fighter/generated/assets.dart';
+import 'package:fire_fighter/utils/app_snackbar.dart';
 import 'package:fire_fighter/views/screens/home/year_selection.dart';
 import 'package:fire_fighter/views/widget/common_image_view_widget.dart';
 import 'package:fire_fighter/views/widget/custom_animated_column.dart';
@@ -65,12 +66,12 @@ class _HomeScreenState extends State<HomeScreen> {
                         height: context.rs(42, min: 38, max: 46),
                         width: context.rs(42, min: 38, max: 46),
                         decoration: BoxDecoration(
-                          color: kSecondaryColor.withOpacity(0.12),
+                          color: kPrimaryColor.withOpacity(0.12),
                           borderRadius: BorderRadius.circular(14),
                         ),
                         child: Icon(
                           Icons.directions_car_filled_rounded,
-                          color: kSecondaryColor,
+                          color: kPrimaryColor,
                           size: context.rs(24, min: 22, max: 26),
                         ),
                       ),
@@ -158,7 +159,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         prefixIcon: _fieldIcon(
                           context,
                           Icons.car_repair_rounded,
-                          kSecondaryColor,
+                          kPrimaryColor,
                         ),
                       ),
                       items:
@@ -188,7 +189,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       onTap: () async {
                         if (hc.selectedMake.value.isEmpty ||
                             hc.selectedModel.value.isEmpty) {
-                          Get.snackbar(
+                          AppSnackBar.show(
                             "Locate Battery",
                             "Please select make and model.",
                           );
@@ -197,7 +198,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
                         await hc.loadYearLabels();
                         if (hc.yearLabelSuggestions.isEmpty) {
-                          Get.snackbar(
+                          AppSnackBar.show(
                             "Locate Battery",
                             "No years found for this model.",
                           );

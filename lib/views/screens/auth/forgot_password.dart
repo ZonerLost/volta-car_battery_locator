@@ -104,8 +104,6 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     ),
                   ),
                   context.rs(compact ? 12 : 16).vSpace,
-                  const AuthDivider(),
-                  context.rs(compact ? 12 : 16).vSpace,
                   MyButton(
                     onTap: () {
                       Get.off(() => LoginScreen());
@@ -116,14 +114,6 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     fontColor: kFontText,
                     buttonText: "Back to Log In",
                     hasgrad: true,
-                  ),
-                  context.rs(compact ? 16 : 22).vSpace,
-                  AuthFooterLink(
-                    text: "Remembered your password?",
-                    actionText: "Log In",
-                    onTap: () {
-                      Get.to(() => LoginScreen());
-                    },
                   ),
                 ],
               ),

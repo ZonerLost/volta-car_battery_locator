@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:fire_fighter/utils/app_snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../data/auth_repo.dart';
@@ -26,7 +27,7 @@ class ForgotPasswordController extends GetxController {
   Future<void> sendResetLink() async {
     final err = _validateEmail();
     if (err != null) {
-      Get.snackbar("Forgot Password", err, snackPosition: SnackPosition.BOTTOM);
+      AppSnackBar.show("Forgot Password", err);
       return;
     }
 
@@ -35,22 +36,34 @@ class ForgotPasswordController extends GetxController {
     try {
       isLoading.value = true;
 
+      final registered = await _repo.isEmailRegistered(email);
+      if (!registered) {
+        AppSnackBar.show(
+          "Reset Failed",
+          "No Volt account is registered with this email.",
+        );
+        return;
+      }
+
       await _repo.forgotPassword(email);
 
-      Get.snackbar(
+      AppSnackBar.show(
         "Email Sent",
         "Volt sent a password reset link to $email. Please check your inbox or spam folder.",
-        snackPosition: SnackPosition.BOTTOM,
         duration: Duration(seconds: 4),
       );
     } on FirebaseAuthException catch (e) {
       // ✅ show clean messages
       final msg = _friendlyFirebaseMsg(e.code, e.message);
-      Get.snackbar("Reset Failed", msg, snackPosition: SnackPosition.BOTTOM);
-      debugPrint("FORGOT PASSWORD ERROR => code=${e.code}, message=${e.message}");
+      AppSnackBar.show("Reset Failed", msg);
+      debugPrint(
+        "FORGOT PASSWORD ERROR => code=${e.code}, message=${e.message}",
+      );
     } catch (e) {
-      Get.snackbar("Reset Failed", e.toString(),
-          snackPosition: SnackPosition.BOTTOM);
+      AppSnackBar.show(
+        "Reset Failed",
+        e.toString().replaceFirst("Exception: ", ""),
+      );
     } finally {
       isLoading.value = false;
     }

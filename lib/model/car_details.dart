@@ -20,6 +20,7 @@ class CarDetails {
   final String model;
   final int yearFrom;
   final int yearTo;
+  final String rawYearLabel;
   final String location;
   final String description;
   final int batteryCount;
@@ -35,6 +36,7 @@ class CarDetails {
     required this.model,
     required this.yearFrom,
     required this.yearTo,
+    this.rawYearLabel = "",
     required this.location,
     required this.description,
     required this.batteryCount,
@@ -46,6 +48,8 @@ class CarDetails {
   });
 
   String get yearLabel {
+    final label = rawYearLabel.trim();
+    if (label.isNotEmpty) return label;
     if (yearFrom == 0 && yearTo == 0) return "";
     if (yearFrom == yearTo) return "$yearFrom";
     return "$yearFrom-$yearTo";
@@ -58,8 +62,9 @@ class CarDetails {
       id: doc.id,
       make: (data['make'] ?? '').toString(),
       model: (data['model'] ?? '').toString(),
-      yearFrom: _parseInt(data['yearFrom']),
-      yearTo: _parseInt(data['yearTo']),
+      yearFrom: _parseInt(data['yearFrom'] ?? data['yearStart']),
+      yearTo: _parseInt(data['yearTo'] ?? data['yearEnd']),
+      rawYearLabel: (data['yearLabel'] ?? '').toString(),
       location: (data['location'] ?? '').toString(),
       description: (data['description'] ?? '').toString(),
       batteryCount: _parseInt(data['batteryCount']),

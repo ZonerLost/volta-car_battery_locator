@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:fire_fighter/utils/app_snackbar.dart';
 import '../data/auth_repo.dart';
 
 class LoginController extends GetxController {
@@ -35,21 +36,18 @@ class LoginController extends GetxController {
   Future<bool> login() async {
     final err = validate();
     if (err != null) {
-      Get.snackbar("Login", err);
+      AppSnackBar.show("Login", err);
       return false;
     }
 
     try {
       isLoading.value = true;
 
-      await _repo.login(
-        email: emailC.text.trim(),
-        password: passwordC.text,
-      );
+      await _repo.login(email: emailC.text.trim(), password: passwordC.text);
 
       return true;
     } catch (e) {
-      Get.snackbar("Login Failed", e.toString());
+      AppSnackBar.show("Login Failed", _cleanError(e));
       return false;
     } finally {
       isLoading.value = false;
@@ -59,23 +57,23 @@ class LoginController extends GetxController {
   Future<void> sendResetEmail() async {
     final email = emailC.text.trim();
     if (email.isEmpty) {
-      Get.snackbar("Forgot Password", "Please enter your email first.");
+      AppSnackBar.show("Forgot Password", "Please enter your email first.");
       return;
     }
     if (!GetUtils.isEmail(email)) {
-      Get.snackbar("Forgot Password", "Please enter a valid email.");
+      AppSnackBar.show("Forgot Password", "Please enter a valid email.");
       return;
     }
 
     try {
       isLoading.value = true;
       await _repo.forgotPassword(email);
-      Get.snackbar(
+      AppSnackBar.show(
         "Email Sent",
         "Volt sent a password reset link to $email. Please check your inbox or spam folder.",
       );
     } catch (e) {
-      Get.snackbar("Reset Failed", e.toString());
+      AppSnackBar.show("Reset Failed", _cleanError(e));
     } finally {
       isLoading.value = false;
     }
@@ -87,19 +85,20 @@ class LoginController extends GetxController {
       await _repo.signInAnonymously();
       return true;
     } catch (e) {
-      Get.snackbar("Guest Login Failed", e.toString());
+      AppSnackBar.show("Guest Login Failed", _cleanError(e));
       return false;
     } finally {
       isLoading.value = false;
     }
   }
+
   Future<bool> googleLogin() async {
     try {
       isLoading.value = true;
       await _repo.signInWithGoogle();
       return true;
     } catch (e) {
-      Get.snackbar("Google Sign-In Failed", e.toString());
+      AppSnackBar.show("Google Sign-In Failed", _cleanError(e));
       return false;
     } finally {
       isLoading.value = false;
@@ -112,10 +111,15 @@ class LoginController extends GetxController {
       await _repo.signInWithApple();
       return true;
     } catch (e) {
-      Get.snackbar("Apple Sign-In Failed", e.toString());
+      AppSnackBar.show("Apple Sign-In Failed", _cleanError(e));
       return false;
     } finally {
       isLoading.value = false;
     }
+  }
+
+  String _cleanError(Object e) {
+    final msg = e.toString().replaceFirst("Exception: ", "").trim();
+    return msg.isEmpty ? "Something went wrong. Please try again." : msg;
   }
 }
