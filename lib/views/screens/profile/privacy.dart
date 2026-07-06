@@ -45,6 +45,14 @@ class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> {
                   textAlign: TextAlign.start,
                 ),
                 MyText(
+                  text: "Last updated: July 1, 2026",
+                  size: 14,
+                  weight: FontWeight.w500,
+                  color: kFontText8,
+                  paddingBottom: 12,
+                  textAlign: TextAlign.start,
+                ),
+                MyText(
                   text:
                       "By using this app, you agree to our Terms of Service and Privacy Policy.",
                   size: 20,
@@ -242,7 +250,7 @@ class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> {
                       Gap(10),
                       MyText(
                         text:
-                            "To exercise your rights, contact us at: [Insert Support Email]",
+                            "You can permanently delete your account from Settings > Delete Account. For other privacy requests, use Support & Info in the app.",
                         size: 18,
                         weight: FontWeight.w500,
                         color: kFontText,

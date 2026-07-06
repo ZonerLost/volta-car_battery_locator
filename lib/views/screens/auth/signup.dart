@@ -13,6 +13,7 @@ import 'package:fire_fighter/views/widget/custom_animated_column.dart';
 import 'package:fire_fighter/views/widget/custom_checkbox_widget.dart';
 import 'package:fire_fighter/views/widget/my_button_new.dart';
 import 'package:fire_fighter/views/widget/my_textfeild.dart';
+import 'package:fire_fighter/views/screens/profile/privacy.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -198,6 +199,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         c.agreed.value = value;
                         c.termsError.value = "";
                       },
+                    ),
+                  ),
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: TextButton(
+                      onPressed:
+                          () => Get.to(() => const PrivacyPolicyScreen()),
+                      child: const Text("Read Privacy Policy & Terms"),
                     ),
                   ),
                   Obx(

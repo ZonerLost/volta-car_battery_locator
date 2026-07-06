@@ -230,6 +230,15 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                     );
                   },
                 ),
+                if (!isGuest) ...[
+                  _divider(),
+                  _buildSettingTile(
+                    icon: Assets.imagesClose,
+                    title: "Delete Account",
+                    subtitle: "Permanently delete your account and saved data.",
+                    onTap: () => _showDeleteAccountDialog(context),
+                  ),
+                ],
               ],
             ),
           ),
@@ -274,5 +283,61 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
 
   Widget _divider() {
     return Divider(height: 0, color: kDividerColor, indent: 16, endIndent: 16);
+  }
+
+  Future<void> _showDeleteAccountDialog(BuildContext context) async {
+    final passwordController = TextEditingController();
+    final needsPassword = c.needsPasswordForDeletion;
+
+    await Get.dialog<void>(
+      AlertDialog(
+        backgroundColor: kWhite,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: const Text("Delete account permanently?"),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              "Your profile, recent searches, and Firebase account will be permanently deleted. This cannot be undone.",
+            ),
+            if (needsPassword) ...[
+              const Gap(16),
+              TextField(
+                controller: passwordController,
+                obscureText: true,
+                decoration: const InputDecoration(
+                  labelText: "Current password",
+                  border: OutlineInputBorder(),
+                ),
+              ),
+            ],
+          ],
+        ),
+        actions: [
+          TextButton(onPressed: Get.back, child: const Text("Cancel")),
+          Obx(
+            () => FilledButton(
+              style: FilledButton.styleFrom(backgroundColor: kPrimaryColor),
+              onPressed:
+                  c.isDeleting.value
+                      ? null
+                      : () async {
+                        final deleted = await c.deleteAccount(
+                          password: passwordController.text,
+                        );
+                        if (!deleted || !context.mounted) return;
+                        Get.offAllNamed('/login');
+                      },
+              child: Text(
+                c.isDeleting.value ? "Deleting..." : "Delete permanently",
+              ),
+            ),
+          ),
+        ],
+      ),
+      barrierDismissible: false,
+    );
+    passwordController.dispose();
   }
 }

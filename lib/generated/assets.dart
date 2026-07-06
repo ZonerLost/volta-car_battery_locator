@@ -209,6 +209,8 @@ class Assets {
   /// Assets for imagesGoogle
   /// assets/images/google.png
   static const String imagesGoogle = "assets/images/google.png";
+  static const String imagesGoogleSvg = "assets/images/google.svg";
+  static const String imagesAppleSvg = "assets/images/apple.svg";
 
   /// Assets for imagesHomeActive
   /// assets/images/home_active.png

@@ -5,12 +5,16 @@ import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 
 import '../config/routes/routes.dart';
+import '../data/auth_repo.dart';
+import '../utils/app_snackbar.dart';
 
 class ProfileSettingsController extends GetxController {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _db = FirebaseFirestore.instance;
+  final AuthRepo _authRepo = AuthRepo();
 
   final isLoading = true.obs;
+  final isDeleting = false.obs;
 
   final fullName = "User".obs;
   final email = "".obs;
@@ -86,6 +90,25 @@ class ProfileSettingsController extends GetxController {
   Future<void> clearCache() async {
     if (Get.isRegistered<RecentSearchesController>()) {
       await Get.find<RecentSearchesController>().clearAll();
+    }
+  }
+
+  bool get needsPasswordForDeletion => _authRepo.currentUserUsesPassword;
+
+  Future<bool> deleteAccount({String? password}) async {
+    try {
+      isDeleting.value = true;
+      await _authRepo.deleteAccount(password: password);
+      return true;
+    } catch (e) {
+      final message = e.toString().replaceFirst("Exception: ", "").trim();
+      AppSnackBar.show(
+        "Account deletion failed",
+        message.isEmpty ? "Please try again." : message,
+      );
+      return false;
+    } finally {
+      isDeleting.value = false;
     }
   }
 

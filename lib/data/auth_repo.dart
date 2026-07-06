@@ -199,27 +199,76 @@ class AuthRepo {
   // APPLE SIGN IN
   // =========================
   Future<UserCredential> signInWithApple() async {
-    final rawNonce = _generateNonce();
-    final nonce = _sha256ofString(rawNonce);
+    try {
+      final result = await _appleOAuthCredential();
+      final userCred = await _auth.signInWithCredential(result.$1);
+      await _ensureUserDoc(userCred.user, appleCredential: result.$2);
+      return userCred;
+    } on SignInWithAppleAuthorizationException catch (e) {
+      if (e.code == AuthorizationErrorCode.canceled) {
+        throw Exception("Apple sign-in was cancelled.");
+      }
+      throw Exception(e.message);
+    } on FirebaseAuthException catch (e) {
+      throw Exception(_friendlyAuthMessage(e));
+    } on PlatformException catch (e) {
+      throw Exception(e.message ?? "Apple sign-in is not available.");
+    }
+  }
 
-    final appleCredential = await SignInWithApple.getAppleIDCredential(
-      scopes: [
-        AppleIDAuthorizationScopes.email,
-        AppleIDAuthorizationScopes.fullName,
-      ],
-      nonce: nonce,
-    );
+  bool get currentUserUsesPassword =>
+      _auth.currentUser?.providerData.any(
+        (provider) => provider.providerId == "password",
+      ) ??
+      false;
 
-    final oauthCredential = OAuthProvider(
-      "apple.com",
-    ).credential(idToken: appleCredential.identityToken, rawNonce: rawNonce);
+  // Re-authenticates first, removes the user's private Firestore data, and
+  // finally removes the Firebase Authentication account.
+  Future<void> deleteAccount({String? password}) async {
+    final user = _auth.currentUser;
+    if (user == null) throw Exception("No signed-in account was found.");
 
-    final userCred = await _auth.signInWithCredential(oauthCredential);
+    try {
+      if (!user.isAnonymous) {
+        final providers = user.providerData.map((e) => e.providerId).toSet();
 
-    // optional: ensure user doc exists
-    await _ensureUserDoc(userCred.user, appleCredential: appleCredential);
+        if (providers.contains("apple.com")) {
+          final result = await _appleOAuthCredential();
+          await user.reauthenticateWithCredential(result.$1);
+        } else if (providers.contains("google.com")) {
+          final credential = await _googleOAuthCredential();
+          await user.reauthenticateWithCredential(credential);
+        } else if (providers.contains("password")) {
+          if ((password ?? "").isEmpty) {
+            throw Exception("Please enter your password to delete the account.");
+          }
+          final email = user.email;
+          if (email == null || email.isEmpty) {
+            throw Exception("This account does not have an email address.");
+          }
+          await user.reauthenticateWithCredential(
+            EmailAuthProvider.credential(email: email, password: password!),
+          );
+        }
+      }
 
-    return userCred;
+      final userRef = _db.collection("users").doc(user.uid);
+      final recentSearches = await userRef.collection("recentSearches").get();
+      for (var i = 0; i < recentSearches.docs.length; i += 400) {
+        final batch = _db.batch();
+        for (final doc in recentSearches.docs.skip(i).take(400)) {
+          batch.delete(doc.reference);
+        }
+        await batch.commit();
+      }
+      await userRef.delete();
+      await user.delete();
+      try {
+        await GoogleSignIn().signOut();
+      } catch (_) {}
+    } on FirebaseAuthException catch (e) {
+      throw Exception(_friendlyAuthMessage(e));
+    }
   }
 
   // =========================
@@ -243,6 +292,8 @@ class AuthRepo {
         return "Too many attempts. Please try again later.";
       case "network-request-failed":
         return "Network issue. Please check your internet and try again.";
+      case "requires-recent-login":
+        return "Please sign in again before deleting your account.";
       default:
         return e.message ?? "Something went wrong. Please try again.";
     }
@@ -297,5 +348,43 @@ class AuthRepo {
     final bytes = utf8.encode(input);
     final digest = sha256.convert(bytes);
     return digest.toString();
+  }
+
+  Future<OAuthCredential> _googleOAuthCredential() async {
+    final googleSignIn = GoogleSignIn(
+      clientId:
+          defaultTargetPlatform == TargetPlatform.iOS ? _googleIosClientId : null,
+      serverClientId: _googleWebClientId,
+      scopes: const ["email", "profile"],
+    );
+    final googleUser = await googleSignIn.signIn();
+    if (googleUser == null) throw Exception("Google sign-in was cancelled.");
+    final tokens = await googleUser.authentication;
+    return GoogleAuthProvider.credential(
+      accessToken: tokens.accessToken,
+      idToken: tokens.idToken,
+    );
+  }
+
+  Future<(OAuthCredential, AuthorizationCredentialAppleID)>
+  _appleOAuthCredential() async {
+    final rawNonce = _generateNonce();
+    final appleCredential = await SignInWithApple.getAppleIDCredential(
+      scopes: const [
+        AppleIDAuthorizationScopes.email,
+        AppleIDAuthorizationScopes.fullName,
+      ],
+      nonce: _sha256ofString(rawNonce),
+    );
+    final identityToken = appleCredential.identityToken;
+    if (identityToken == null || identityToken.isEmpty) {
+      throw Exception("Apple did not return a valid sign-in token.");
+    }
+    return (
+      OAuthProvider(
+        "apple.com",
+      ).credential(idToken: identityToken, rawNonce: rawNonce),
+      appleCredential,
+    );
   }
 }

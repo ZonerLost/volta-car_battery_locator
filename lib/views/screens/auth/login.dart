@@ -11,6 +11,7 @@ import 'package:fire_fighter/constants/app_colors.dart';
 import 'package:fire_fighter/constants/extensions.dart';
 import 'package:fire_fighter/generated/assets.dart';
 import 'package:fire_fighter/views/screens/auth/signup.dart';
+import 'package:fire_fighter/views/screens/profile/privacy.dart';
 import 'package:fire_fighter/views/widget/common_image_view_widget.dart';
 import 'package:fire_fighter/views/widget/custom_animated_column.dart';
 import 'package:fire_fighter/views/widget/my_button_new.dart';
@@ -170,55 +171,30 @@ class _LoginScreenState extends State<LoginScreen> {
                   const AuthDivider(),
                   context.rs(compact ? 12 : 16).vSpace,
 
-                  Obx(
-                    () => MyButton(
-                      onTap: () async {
-                        if (c.isLoading.value) return;
-
-                        final ok = await c.googleLogin();
-                        if (ok) {
-                          Get.offAll(() => BottomNavBar());
-                        }
-                      },
-                      radius: 12,
-                      backgroundColor: kWhite,
-                      outlineColor: kBorderColor3,
-                      fontColor: kFontText,
-                      hasicon: true,
-                      choiceIcon: Assets.imagesGoogle,
-                      buttonText:
-                          c.isLoading.value
-                              ? "Please wait..."
-                              : "Continue with Google",
-                      hasgrad: true,
-                    ),
-                  ),
-
-                  if (GetPlatform.isIOS) context.rs(10).vSpace,
-
-                  /// ================= APPLE SIGN IN =================
-                  if (GetPlatform.isIOS)
-                    Obx(
-                      () => MyButton(
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      _socialButton(
+                        asset: Assets.imagesGoogleSvg,
                         onTap: () async {
                           if (c.isLoading.value) return;
-
-                          final ok = await c.appleLogin();
-                          if (ok) {
+                          if (await c.googleLogin()) {
                             Get.offAll(() => BottomNavBar());
                           }
                         },
-                        radius: 12,
-                        backgroundColor: kWhite,
-                        outlineColor: kBorderColor3,
-                        fontColor: kFontText,
-                        buttonText:
-                            c.isLoading.value
-                                ? "Please wait..."
-                                : "Continue with Apple",
-                        hasgrad: true,
                       ),
-                    ),
+                      context.rs(10).hSpace,
+                      _socialButton(
+                        asset: Assets.imagesAppleSvg,
+                        onTap: () async {
+                          if (c.isLoading.value) return;
+                          if (await c.appleLogin()) {
+                            Get.offAll(() => BottomNavBar());
+                          }
+                        },
+                      ),
+                    ],
+                  ),
 
                   context.rs(compact ? 16 : 22).vSpace,
 
@@ -229,11 +205,39 @@ class _LoginScreenState extends State<LoginScreen> {
                       Get.to(() => SignUpScreen());
                     },
                   ),
+                  context.rs(12).vSpace,
+                  Center(
+                    child: TextButton(
+                      onPressed:
+                          () => Get.to(() => const PrivacyPolicyScreen()),
+                      child: const Text("Privacy Policy & Terms"),
+                    ),
+                  ),
                 ],
               ),
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _socialButton({
+    required String asset,
+    required Future<void> Function() onTap,
+  }) {
+    return Bounce(
+      onTap: onTap,
+      child: Container(
+        width: 102,
+        height: 50,
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          color: kWhite,
+          borderRadius: BorderRadius.circular(2),
+          border: Border.all(color: kBorderColor3),
+        ),
+        child: CommonImageView(svgPath: asset, width: 25, height: 25),
       ),
     );
   }
