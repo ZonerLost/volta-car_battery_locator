@@ -1,30 +1,26 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
+import 'package:fire_fighter/views/screens/launch/safety/battery_safety.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:fire_fighter/main.dart';
-
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  testWidgets('battery warning must be accepted before continuing', (
+    WidgetTester tester,
+  ) async {
+    var accepted = false;
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    await tester.pumpWidget(
+      MaterialApp(home: BatterySafetyScreen(onAccepted: () => accepted = true)),
+    );
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
+    expect(find.text('CAUTION: Vehicle Battery Safety'), findsOneWidget);
+    expect(find.textContaining('electrical shock'), findsOneWidget);
+    expect(accepted, isFalse);
+
+    final okButton = find.byKey(const Key('battery-safety-ok-button'));
+    await tester.ensureVisible(okButton);
+    await tester.tap(okButton);
     await tester.pump();
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    expect(accepted, isTrue);
   });
 }

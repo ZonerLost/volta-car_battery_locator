@@ -1,9 +1,9 @@
-import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:get/get.dart';
 import 'package:fire_fighter/constants/extensions.dart';
 import 'package:fire_fighter/views/screens/auth/login.dart';
 import 'package:fire_fighter/views/screens/bottom_nav/BottomBarNav.dart';
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:fire_fighter/views/widget/common_image_view_widget.dart';
 import '../../../../generated/assets.dart';
 
@@ -20,6 +20,7 @@ class _SplashScreenState extends State<SplashScreen> {
     super.initState();
 
     Future.delayed(const Duration(seconds: 4), () {
+      if (!mounted) return;
       final user = FirebaseAuth.instance.currentUser;
       Get.off(() => user == null ? const LoginScreen() : const BottomNavBar());
     });

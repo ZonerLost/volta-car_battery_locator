@@ -9,6 +9,7 @@ import '../../views/screens/bottom_nav/BottomBarNav.dart';
 import '../../views/screens/home/home.dart';
 import '../../views/screens/home/locate_battery.dart';
 import '../../views/screens/launch/splash/splash.dart';
+import '../../views/screens/launch/safety/battery_safety.dart';
 import '../../views/screens/notifications/notifications.dart';
 import '../../views/screens/profile/edit_profile.dart';
 import '../../views/screens/profile/help_center.dart';
@@ -20,10 +21,10 @@ import '../../views/screens/report_module/report_issue.dart';
 import '../../views/screens/report_module/wrong_location.dart';
 import '../../views/screens/search_module/recent_searches.dart';
 
-
 class AppRoutes {
   // Route Names
   static const String splash = '/';
+  static const String batterySafety = '/battery-safety';
   static const String login = '/login';
   static const String signup = '/signup';
   static const String otp = '/otp';
@@ -52,11 +53,13 @@ class AppRoutes {
   // Central Route Generator
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
     switch (settings.name) {
-    // LAUNCH
+      // LAUNCH
       case splash:
         return MaterialPageRoute(builder: (_) => const SplashScreen());
+      case batterySafety:
+        return MaterialPageRoute(builder: (_) => const BatterySafetyScreen());
 
-    // AUTH
+      // AUTH
       case login:
         return MaterialPageRoute(builder: (_) => const LoginScreen());
       case signup:
@@ -70,19 +73,21 @@ class AppRoutes {
       case waiverDetail:
         return MaterialPageRoute(builder: (_) => const WavierDetailScreen());
 
-    // NAV / HOME
+      // NAV / HOME
       case bottomNav:
         return MaterialPageRoute(builder: (_) => const BottomNavBar());
       case home:
         return MaterialPageRoute(builder: (_) => const HomeScreen());
       case locateBattery:
-        return MaterialPageRoute(builder: (_) => const LocateBatteryScreen(carId: '',));
+        return MaterialPageRoute(
+          builder: (_) => const LocateBatteryScreen(carId: ''),
+        );
 
-    // NOTIFICATIONS
+      // NOTIFICATIONS
       case notifications:
         return MaterialPageRoute(builder: (_) => const NotificationScreen());
 
-    // PROFILE
+      // PROFILE
       case profileSettings:
         return MaterialPageRoute(builder: (_) => const ProfileSettingsScreen());
       case editProfile:
@@ -92,7 +97,7 @@ class AppRoutes {
       case privacy:
         return MaterialPageRoute(builder: (_) => const PrivacyPolicyScreen());
 
-    // REPORT
+      // REPORT
       case reportIssue:
         return MaterialPageRoute(builder: (_) => const ReportIssueScreen());
       case generalFeedback:
@@ -102,15 +107,15 @@ class AppRoutes {
       case wrongLocation:
         return MaterialPageRoute(builder: (_) => const WrongLocationScreen());
 
-    // SEARCH
+      // SEARCH
       case recentSearches:
         return MaterialPageRoute(builder: (_) => const RecentSearchesScreen());
 
       default:
         return MaterialPageRoute(
-          builder: (_) => const Scaffold(
-            body: Center(child: Text('Route not found')),
-          ),
+          builder:
+              (_) =>
+                  const Scaffold(body: Center(child: Text('Route not found'))),
         );
     }
   }

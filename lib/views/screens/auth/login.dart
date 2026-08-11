@@ -3,7 +3,7 @@
 import 'package:fire_fighter/controller/login_controller.dart';
 import 'package:fire_fighter/views/screens/auth/auth_widgets.dart';
 import 'package:fire_fighter/views/screens/auth/forgot_password.dart';
-import 'package:fire_fighter/views/screens/bottom_nav/BottomBarNav.dart';
+import 'package:fire_fighter/views/screens/launch/safety/battery_safety.dart';
 import 'package:bounce/bounce.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -157,7 +157,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               : () async {
                                 final ok = await c.login();
                                 if (ok) {
-                                  Get.offAll(() => BottomNavBar());
+                                  Get.offAll(() => const BatterySafetyScreen());
                                 }
                               },
                       radius: 12,
@@ -179,7 +179,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         onTap: () async {
                           if (c.isLoading.value) return;
                           if (await c.googleLogin()) {
-                            Get.offAll(() => BottomNavBar());
+                            Get.offAll(() => const BatterySafetyScreen());
                           }
                         },
                       ),
@@ -189,7 +189,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         onTap: () async {
                           if (c.isLoading.value) return;
                           if (await c.appleLogin()) {
-                            Get.offAll(() => BottomNavBar());
+                            Get.offAll(() => const BatterySafetyScreen());
                           }
                         },
                       ),
