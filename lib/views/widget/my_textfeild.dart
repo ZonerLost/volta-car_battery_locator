@@ -6,34 +6,34 @@ import 'package:fire_fighter/views/widget/custom_animated_column.dart';
 import 'package:fire_fighter/views/widget/my_text_widget.dart';
 
 class MyTextField extends StatefulWidget {
-  String? label, hint;
-  TextEditingController? controller;
-  ValueChanged<String>? onChanged;
+  final String? label, hint;
+  final TextEditingController? controller;
+  final ValueChanged<String>? onChanged;
 
   /// keep existing param
-  bool isObSecure;
+  final bool isObSecure;
 
   /// ✅ NEW: alias param (so your signup can use obscureText:)
   final bool? obscureText;
 
-  bool? haveLabel, isReadOnly;
-  double? marginBottom, radius;
-  int? maxLines;
-  double? labelSize, hintsize;
-  FocusNode? focusNode;
-  Color? filledColor, focusedFillColor, bordercolor, hintColor, labelColor;
-  Widget? prefix, suffix;
-  FontWeight? labelWeight, hintWeight;
+  final bool? haveLabel, isReadOnly;
+  final double? marginBottom, radius;
+  final int? maxLines;
+  final double? labelSize, hintsize;
+  final FocusNode? focusNode;
+  final Color? filledColor, focusedFillColor, bordercolor, hintColor, labelColor;
+  final Widget? prefix, suffix;
+  final FontWeight? labelWeight, hintWeight;
   final VoidCallback? onTap;
   final TextInputType? keyboardType;
   final double? height;
   final double? Width;
   final FormFieldValidator<String>? validator;
-  Color? backgroundColor;
-  Color? borderColor;
-  String? errorText;
+  final Color? backgroundColor;
+  final Color? borderColor;
+  final String? errorText;
 
-  MyTextField({
+  const MyTextField({
     super.key,
     this.controller,
     this.hint,

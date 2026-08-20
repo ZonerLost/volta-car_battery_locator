@@ -145,8 +145,6 @@ class _AnimatedFAQTile extends StatefulWidget {
 }
 
 class _AnimatedFAQTileState extends State<_AnimatedFAQTile> {
-  bool _isExpanded = false;
-
   @override
   Widget build(BuildContext context) {
     return Theme(
@@ -161,11 +159,6 @@ class _AnimatedFAQTileState extends State<_AnimatedFAQTile> {
           bottom: 12,
           top: 0,
         ),
-        onExpansionChanged: (expanded) {
-          setState(() {
-            _isExpanded = expanded;
-          });
-        },
         title: MyText(
           text: widget.question,
           size: 16,
