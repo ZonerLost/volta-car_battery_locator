@@ -2,7 +2,7 @@ name: fire_fighter
 description: "Find where the battery is located in any car. Pick a make, model and year to see a marked diagram, battery count and written directions."
 
 publish_to: 'none'
-version: 1.0.0+3
+version: 1.0.2+5
 
 environment:
   sdk: ^3.7.0

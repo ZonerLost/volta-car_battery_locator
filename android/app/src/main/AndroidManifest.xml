@@ -2,7 +2,7 @@
     <uses-permission android:name="android.permission.INTERNET"/>
 
     <application
-        android:label="Volt : Car Battery Locator"
+        android:label="VOLT : Car Battery Locator"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
